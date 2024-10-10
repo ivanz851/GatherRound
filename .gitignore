@@ -1,0 +1,12 @@
+documentation/src/PRD/*
+
+!documentation/src/PRD/0_main.tex
+!documentation/src/PRD/1_title_page.tex
+!documentation/src/PRD/2_purpose.tex
+!documentation/src/PRD/3_customer_and_value.tex
+!documentation/src/PRD/4_solution.tex
+!documentation/src/PRD/5_execution.tex
+
+documentation/src/Initiative_project_application/*
+
+!documentation/src/Initiative_project_application/Initiative_project_application.tex
