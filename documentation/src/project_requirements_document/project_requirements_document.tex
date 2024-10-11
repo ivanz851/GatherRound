@@ -1,0 +1,263 @@
+\documentclass[a4paper,12pt]{extarticle}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{csquotes}
+\usepackage{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{pgf}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{cmap}
+
+\usepackage[
+backend=biber,
+style=numeric,
+maxbibnames=99
+]{biblatex}
+\addbibresource{refs.bib}
+\usepackage[colorlinks,citecolor=blue,linkcolor=blue,bookmarks=false,hypertexnames=true, urlcolor=blue]{hyperref} 
+\usepackage{indentfirst}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage[flushleft]{threeparttable}
+\usepackage{tablefootnote}
+
+\usepackage{chngcntr} % нумерация графиков и таблиц по секциям
+\counterwithin{table}{section}
+\counterwithin{figure}{section}
+
+\graphicspath{{graphics/}}%путь к рисункам
+
+\makeatletter
+% \renewcommand{\@biblabel}[1]{#1.} % Заменяем библиографию с квадратных скобок на точку:
+\makeatother
+
+\geometry{left=2.5cm}% левое поле
+\geometry{right=1.0cm}% правое поле
+\geometry{top=2.0cm}% верхнее поле
+\geometry{bottom=2.0cm}% нижнее поле
+\setlength{\parindent}{1.25cm}
+\renewcommand{\baselinestretch}{1.5} % междустрочный интервал
+
+
+\newcommand{\bibref}[3]{\hyperlink{#1}{#2 (#3)}} % biblabel, authors, year
+\addto\captionsrussian{\def\refname{Список литературы (или источников)}} 
+
+\renewcommand{\theenumi}{\arabic{enumi}}% Меняем везде перечисления на цифра.цифра
+\renewcommand{\labelenumi}{\arabic{enumi}}% Меняем везде перечисления на цифра.цифра
+\renewcommand{\theenumii}{.\arabic{enumii}}% Меняем везде перечисления на цифра.цифра
+\renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}.}% Меняем везде перечисления на цифра.цифра
+\renewcommand{\theenumiii}{.\arabic{enumiii}}% Меняем везде перечисления на цифра.цифра
+\renewcommand{\labelenumiii}{\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}.}% Меняем везде перечисления на цифра.цифра
+
+% Определение цветов
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Определение стиля листинга кода
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+% Настройка стиля листинга кода
+\lstset{style=mystyle}
+
+\titleformat{\section}[block]{\normalfont\Large\bfseries\centering}{\thesection}{1em}{}
+
+\title{Требования к проекту \textit{<<Gather Round>>}}
+\date{}
+
+\begin{document}
+
+\newpage
+\setcounter{page}{1}
+{
+  \hypersetup{linkcolor=black}
+}
+
+\maketitle
+
+
+\section{Цель}
+\subsection{Обзор проекта} 
+\noindent
+"<Gather Round"> — приложение, созданное для упрощения организации встреч компаний друзей на культурных мероприятиях. 
+Идея создания приложения возникла из наблюдения за сложностями, с которыми сталкиваются компании людей при выборе события и места встречи, учитывая разбросанность по городу. 
+Часто процесс организации затягивается, в том числе из-за того, что некоторые из участников тратит значительно больше времени на дорогу, чем другие.
+\subsubsection{Цель продукта} 
+\noindent
+Цель разработки "<Gather Round"> — предоставить пользователям инструмент, который упростит процесс организации совместных мероприятий, сделает его быстрым и удобным, а также повысит посещаемость культурных событий.
+
+\section{Потребительская ценность}
+\subsection{Целевая аудитория} 
+\noindent
+Все возрастные категории, поскольку приложение будет предоставлять инфорацию о событиях различной направленности.
+\subsection{Особенности отрасли:}
+\noindent
+Рост интереса к локальным культурным мероприятиям.
+\\
+Широкое распространение мобильных устройств и приложений для планирования досуга.
+
+\subsection{Рыночные тренды:}
+\noindent
+Увеличение числа пользователей, предпочитающих мобильные приложения для организации времени.
+\\
+Спрос на персонализированные сервисы, учитывающие индивидуальные потребности.
+
+\subsection{Ценностные предложения:}
+\noindent
+\textbf{Оптимизация места встречи:} \\
+Равное время в пути для всех участников.
+\\
+Экономия времени и повышение комфорта при планировании встреч.
+\\
+\textbf{Единый сервис для поиска событий:} \\
+Интеграция с API KudaGo и Портала открытых данных Правительства Москвы для получения актуальной информации о событиях.
+\\
+\textbf{Простота и удобство использования:} \\
+Интуитивно понятный интерфейс.
+\\
+Быстрое взаимодействие с приложением без лишних действий.
+
+\subsection{Рисковые гипотезы} 
+\noindent
+\textbf{Низкий уровень доверия к новым приложениям:} \\
+Пользователи могут опасаться предоставлять данные о своем местоположении.
+\\
+\textbf{Технические ограничения:} \\
+Возможны сложности с интеграцией API Яндекс Карт. 
+\\
+\textbf{Тестирование MVP:} \\
+Запуск минимально жизнеспособного продукта для сбора обратной связи.
+\\
+\textbf{Анализ конкурентов:} \\
+Мониторинг рынка на предмет появления аналогичных решений.
+
+\section{Программное решение}
+\subsection{Основные свойства продукта:}
+\noindent
+\textbf{Разработка:} 
+\newline
+ОС: Android
+\newline
+Бэкенд: Kotlin
+\newline
+Фронтенд: JavaScript с использованием фреймворка Vue.js
+\newline
+\textbf{Интеграции:}
+\newline
+API KudaGo и Портала открытых данных Правительства Москвы для получения актуальных данных о культурных 
+событиях.
+\newline
+API Яндекс Карт для построения оптимальных маршрутов.
+\newline
+\textbf{Функционал:}
+\newline
+Поиск и выбор событий по категориям.
+\newline
+Добавление участников встречи и расчет оптимального места встречи.
+\newline
+Отображение маршрутов для каждого участника с указанием 
+времени в пути.
+\newline
+\textbf{Дизайн:}
+\newline
+Интуитивно понятный интерфейс.
+\newline
+Быстрая навигация по приложению.
+\newline
+\textbf{Дополнительные возможности:}
+\newline
+Сохранение избранных событий.
+\newline
+Уведомления о предстоящих встречах.
+
+\subsection{Этапы разработки} 
+\noindent
+\textbf{1). Разработка прототипа приложения:}
+\\
+Создание базовой структуры.
+\\
+Реализация алгоритма построения оптимальных маршрутов между станциями.
+\\
+Реализация взаимодействия пользователя с приложением через консоль.
+\\
+\textbf{2). Разработка и внедрение дизайна:}
+\\
+Разработка UX/UI макетов. 
+Реализация интерактивной карты московского метро для удобства выбора станций и отображения маршрутов.
+\\
+Внедрение дизайна в приложение.
+\\
+\textbf{3). Доработка и оптимизация алгоритмов:}
+\\
+Интеграция с API.
+\\
+Реализация поиска и построения маршрута от местоположения пользователя до ближайшей станции метро и от станции назначения до места проведения события 
+(с использованием API Яндекс.Карт).
+\\
+Тестирование и отладка функционала.
+\\
+\textbf{4). Публикация в RuStore и тестирование:}
+\\
+Подготовка материалов к публикации.
+\\
+Прохождение модерации.
+\\
+Бета-тестирование с участием реальных пользователей.
+\\
+Сбор и анализ обратной связи.
+
+\subsection{Критерии запуска продукта:}
+\noindent
+Успешное прохождение локального тестирования.
+
+\section{Реализация}
+\subsection{План развития после запуска} 
+\noindent
+\textbf{При достижении целей:}
+\newline
+Расширение функционала: разработка web-версии для доступа с устройств на IOS и Windows.
+\newline
+Масштабирование: добавление других российских городов, в которых есть метрополитен.
+\newline
+\textbf{Если цели не будут достигнуты:}
+\newline
+Анализ: изучение отзывов пользователей для выявления причин.
+\newline
+Корректировка стратегии: изменение и улучшение функционала.
+
+\end{document}
