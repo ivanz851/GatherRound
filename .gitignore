@@ -1,7 +1,0 @@
-documentation/src/project_requirements_document/*
-!documentation/src/project_requirements_document/project_requirements_document.tex
-
-documentation/src/initiative_project_application/*
-!documentation/src/initiative_project_application/initiative_project_application.tex
-
-app/api_keys
