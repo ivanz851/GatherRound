@@ -30,7 +30,7 @@ fun main() {
     */
 
     val graph = MetroGraph(metroData)
-    val (timeInSecs, path) = graph.findShortestPath("Lermontovsky Prospekt", "Novoyasenevskaya")
+    val (timeInSecs, path) = graph.findShortestPath("Yasenevo", "Sviblovo")
 
     val timeInMins: Int = timeInSecs / 60
     println("Время в пути (мин): $timeInMins")

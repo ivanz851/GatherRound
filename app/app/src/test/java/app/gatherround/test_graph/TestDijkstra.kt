@@ -77,4 +77,37 @@ class TestDijkstra {
         assertEquals(0, distance)
         assertEquals(listOf("A"), path)
     }
+
+    @Test
+    fun testBigGraph() {
+        graph.addVertex("1")
+        graph.addVertex("2")
+        graph.addVertex("3")
+        graph.addVertex("4")
+        graph.addVertex("5")
+        graph.addVertex("6")
+        graph.addVertex("7")
+        graph.addVertex("8")
+        graph.addVertex("9")
+        graph.addVertex("10")
+
+        graph.addEdge("1", "2", 5)
+        graph.addEdge("2", "3", 22)
+        graph.addEdge("3", "4", 5)
+        graph.addEdge("4", "5", 5)
+        graph.addEdge("5", "6", 5)
+        graph.addEdge("6", "7", 5)
+        graph.addEdge("7", "8", 5)
+        graph.addEdge("8", "9", 5)
+
+        graph.addEdge("1", "7", 20)
+        graph.addEdge("7", "3", 5)
+        graph.addEdge("5", "10", 1)
+
+
+        val (distance, path) = dijkstra.getShortestPath(graph, "1", "10")
+
+        assertEquals(31, distance) // 1 ->(20) 7 -> (5) 6 ->(5) 5 ->(1) 10
+        assertEquals(listOf("1", "7", "6", "5", "10"), path)
+    }
 }
