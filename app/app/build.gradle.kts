@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "app.GatherRound"
+    namespace = "app.gatherround"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "app.GatherRound"
+        applicationId = "app.gatherround"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -43,9 +43,14 @@ dependencies {
     implementation(libs.material)
     implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-    androidTestImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+}
+
+tasks.withType<Test> {
+    run {
+        useJUnitPlatform()
+    }
 }
