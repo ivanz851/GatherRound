@@ -9,5 +9,5 @@ data class Link(
     val toStationId: Int,
     val weightTime: Int,
     val weightTransfer: Int,
-    val transferId: Int? = null
+    val transferId: Long? = null
 )
