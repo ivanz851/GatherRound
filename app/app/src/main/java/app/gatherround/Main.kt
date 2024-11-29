@@ -29,10 +29,20 @@ fun main() {
     }
     */
 
+
     val graph = MetroGraph(metroData)
-    val (timeInSecs, path) = graph.findShortestPath("Yasenevo", "Sviblovo")
+
+    graph.printAdjList()
+
+
+    val (timeInSecs, path) = graph.findShortestPath(
+        "Tretyakovskaya","VDNKh"
+        )
 
     val timeInMins: Int = timeInSecs / 60
     println("Время в пути (мин): $timeInMins")
-    println("Путь:\n ${path?.joinToString(" ->\n") { it.name }}")
+    println("Путь:")
+    path?.forEach { station ->
+        println("Станция: ${station.name}, Линия: ${station.lineId}")
+    }
 }
