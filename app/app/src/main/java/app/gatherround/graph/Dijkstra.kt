@@ -22,7 +22,7 @@ class Dijkstra<T> : ShortestPathsFinder<T> {
                     prioritySet.remove(Pair(distances[neighbor]!!, neighbor))
                     distances[neighbor] = newDist
                     ancestors[neighbor] = currentVertex
-                    prioritySet.add(Pair(newDist, neighbor))
+                    prioritySet.add(Pair(distances[neighbor]!!, neighbor))
                 }
             }
         }

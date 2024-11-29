@@ -3,6 +3,10 @@ package app.gatherround.graph
 open class Graph<T> {
     private val adjacencyList: MutableMap<T, MutableList<Edge>> = mutableMapOf()
 
+    init {
+
+    }
+
     inner class Edge(val finish: T, val weight: Int = 1)
 
     fun addVertex(vertex: T) {
@@ -13,8 +17,8 @@ open class Graph<T> {
         addVertex(start)
         addVertex(finish)
 
-        adjacencyList[start]?.add(Edge(finish, weight))
-        adjacencyList[finish]?.add(Edge(start, weight))
+        adjacencyList[start]!!.add(Edge(finish, weight))
+        adjacencyList[finish]!!.add(Edge(start, weight))
     }
 
     fun getVertices(): Set<T> {
@@ -28,7 +32,7 @@ open class Graph<T> {
     fun printAdjList() {
         for ((vertex, edges) in adjacencyList) {
             val edgeDescriptions = edges.joinToString { "${it.finish} (вес ${it.weight})" }
-            print("Вершина $vertex соединена с: $edgeDescriptions\n")
+            print("Вершина ${vertex} соединена с: ${edgeDescriptions}\n")
         }
     }
 }

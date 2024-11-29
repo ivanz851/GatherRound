@@ -38,4 +38,16 @@ class MetroGraph(private val metroData: MetroData) : Graph<MetroStation>() {
             Pair(-1, emptyList())
         }
     }
+
+    fun printAllConnections() {
+        metroData.links.values.forEach { link ->
+            val startStation = metroData.getStationById(link.fromStationId)
+            val finishStation = metroData.getStationById(link.toStationId)
+            val timeInSecs = link.weightTime
+
+            if (startStation != null && finishStation != null) {
+                println("${startStation.name}, ${startStation.lineId} -> ${finishStation.name}, ${finishStation.lineId}, время в пути: ${timeInSecs.toDouble()/60} мин")
+            }
+        }
+    }
 }
