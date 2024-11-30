@@ -2,11 +2,14 @@ package app.gatherround.graph
 
 import java.util.TreeSet
 
-class Dijkstra<T> : ShortestPathsFinder<T> {
-    private fun calcShortestPathsFVertex(graph: Graph<T>, start: T): Pair<Map<T, Int>, Map<T, T?>> {
+class Dijkstra<T: Comparable<T>> : ShortestPathsFinder<T> {
+    private fun calcShortestPathsFromVertex(graph: Graph<T>, start: T): Pair<Map<T, Int>, Map<T, T?>> {
         val distances = graph.getVertices().associateWith { Int.MAX_VALUE }.toMutableMap()
         val ancestors = mutableMapOf<T, T?>()
-        val prioritySet = TreeSet<Pair<Int, T>>(compareBy { it.first })
+
+        val prioritySet = TreeSet(
+            compareBy<Pair<Int, T>> { it.first }.thenBy { it.second }
+        )
 
         distances[start] = 0
         prioritySet.add(Pair(distances[start]!!, start))
@@ -31,7 +34,7 @@ class Dijkstra<T> : ShortestPathsFinder<T> {
     }
 
     override fun getShortestPath(graph: Graph<T>, start: T, finish: T): Pair<Int, List<T>?> {
-        val (distances, ancestors) = calcShortestPathsFVertex(graph, start)
+        val (distances, ancestors) = calcShortestPathsFromVertex(graph, start)
         val distance = distances[finish] ?: Int.MAX_VALUE
 
         if (distance == Int.MAX_VALUE) {
