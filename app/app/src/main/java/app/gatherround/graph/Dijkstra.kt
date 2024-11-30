@@ -3,7 +3,7 @@ package app.gatherround.graph
 import java.util.TreeSet
 
 class Dijkstra<T: Comparable<T>> : ShortestPathsFinder<T> {
-    private fun calcShortestPathsFromVertex(graph: Graph<T>, start: T): Pair<Map<T, Int>, Map<T, T?>> {
+    fun calcShortestPathsFromVertex(graph: Graph<T>, start: T): Pair<Map<T, Int>, Map<T, T?>> {
         val distances = graph.getVertices().associateWith { Int.MAX_VALUE }.toMutableMap()
         val ancestors = mutableMapOf<T, T?>()
 
