@@ -3,6 +3,7 @@ package app.gatherround
 import kotlinx.serialization.json.Json
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
+import app.gatherround.metro.getSchemeMetadataPath
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -21,28 +22,13 @@ fun loadMetroDataFromFile(filePath: String): MetroData {
 }
 
 fun main() {
-    val metroData: MetroData = loadMetroDataFromFile("C:\\\\Users\\test\\user\\ProjectSeminar2024-25\\GatherRound\\app\\app\\src\\main\\resources\\get-scheme-metadata.json")
+    val metroData: MetroData = loadMetroDataFromFile(getSchemeMetadataPath())
+    val metroGraph = MetroGraph(metroData)
 
-    /*
-    metroData.stations.forEach { (id, station) ->
-        println("Station ID: $id, Name: ${station.name}, Line: ${station.lineId}, Label: ${station.labelId}")
+    val stations = metroGraph.getVertices()
+
+    stations.forEach { station ->
+        println("${station.name}, ${station.lineId}")
     }
-    */
 
-
-    val graph = MetroGraph(metroData)
-
-    graph.printAdjList()
-
-
-    val (timeInSecs, path) = graph.findShortestPath(
-        "Tretyakovskaya","VDNKh"
-        )
-
-    val timeInMins: Int = timeInSecs / 60
-    println("Время в пути (мин): $timeInMins")
-    println("Путь:")
-    path?.forEach { station ->
-        println("Станция: ${station.name}, Линия: ${station.lineId}")
-    }
 }
