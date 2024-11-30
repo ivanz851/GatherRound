@@ -31,7 +31,7 @@ class TestMetroGraph {
         for ((station, distance) in distances) {
             assertTrue(distance != Int.MAX_VALUE, "Станция ${station.name} недостижима.")
         }
-        
+
         for ((station, predecessor) in ancestors) {
             if (station != startStation) {
                 assertNotNull(predecessor, "У станции ${station.name} нет предка.")
