@@ -23,10 +23,16 @@ data class MetroData(
     private val stationNameIdMap: Map<Pair<String, Int>, Int> = fillStationNameIdMap()
 
     private fun fillStationNameIdMap(): Map<Pair<String, Int>, Int> {
-        return stations.values.associate { station ->
-            Pair(station.name, station.lineId) to station.labelId
+        val result = mutableMapOf<Pair<String, Int>, Int>()
+
+        for ((stationId, station) in stations) {
+            val key = Pair(station.name, station.lineId)
+            result[key] = stationId
         }
+
+        return result
     }
+
 
     fun getStationById(stationId: Int): MetroStation? {
         return stations[stationId]
@@ -40,4 +46,21 @@ data class MetroData(
             stations[stationId]
         }
     }
+
+
+    fun printStationNameIdMap() {
+        stationNameIdMap.forEach { (key, value) ->
+            val (stationName, lineId) = key
+            println("Станция: $stationName, Линия: $lineId, ID: $value")
+        }
+    }
+
+
+
+    fun printStations() {
+        stations.forEach { (id, station) ->
+            println("ID: $id, Станция: ${station.name}, Линия: ${station.lineId}, Label ID: ${station.labelId}, Переходная: ${station.isTransferStation}")
+        }
+    }
+
 }
