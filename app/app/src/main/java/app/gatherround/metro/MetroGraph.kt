@@ -27,9 +27,14 @@ class MetroGraph(private val metroData: MetroData) : Graph<MetroStation>() {
         }
     }
 
-    fun findShortestPath(startStationName: String, finishStationName: String): Pair<Int, List<MetroStation>?> {
-        val start: MetroStation? = metroData.getStationByName(startStationName)
-        val finish: MetroStation? = metroData.getStationByName(finishStationName)
+    fun findShortestPath(startStationName: String,
+                         startStationLineId: Int,
+                         finishStationName: String,
+                         finishStationLineId: Int): Pair<Int, List<MetroStation>?> {
+        val start: MetroStation? =
+            metroData.getStationByNameAndLineId(startStationName, startStationLineId)
+        val finish: MetroStation? =
+            metroData.getStationByNameAndLineId(finishStationName, finishStationLineId)
 
         return if (start != null && finish != null) {
             val (distance, path) = Dijkstra<MetroStation>().getShortestPath(this, start, finish)
