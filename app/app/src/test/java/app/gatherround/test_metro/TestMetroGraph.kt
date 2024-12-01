@@ -5,6 +5,7 @@ import app.gatherround.loadMetroDataFromFile
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
 import app.gatherround.metro.MetroStation
+import app.gatherround.metro.SECS_IN_MIN
 import app.gatherround.metro.getSchemeMetadataPath
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -64,7 +65,7 @@ class TestMetroGraph {
             metroData.getStationByNameAndLineId("Kotelniki", 7),
         ).mapNotNull { it }
 
-        val expectedTimeInSecs = 2820
+        val expectedTimeInSecs = 47 * SECS_IN_MIN
 
         verifyShortestPath(
             startStationName = "Park Pobedy",
@@ -103,13 +104,41 @@ class TestMetroGraph {
             metroData.getStationByNameAndLineId("Kurskaya", 3),
         ).mapNotNull { it }
 
-        val expectedTimeInSecs = 2820
+        val expectedTimeInSecs = 44 * SECS_IN_MIN
 
         verifyShortestPath(
             startStationName = "Bitsevsky Park",
             startStationLineId = 12,
             finishStationName = "Kurskaya",
             finishStationLineId = 3,
+            expectedPath = expectedPath,
+            expectedTimeInSecs = expectedTimeInSecs,
+        )
+    }
+
+    @Test
+    fun testFindShortestPath_from_ShosseEntuziastov14_to_Tulskaya9() {
+        val expectedPath = listOf(
+            metroData.getStationByNameAndLineId("Shosse Entuziastov", 8),
+            metroData.getStationByNameAndLineId("Aviamotornaya", 8),
+            metroData.getStationByNameAndLineId("Ploshchad Ilicha", 8),
+            metroData.getStationByNameAndLineId("Marksistskaya", 8),
+
+            metroData.getStationByNameAndLineId("Taganskaya", 5),
+            metroData.getStationByNameAndLineId("Paveletskaya", 5),
+            metroData.getStationByNameAndLineId("Dobryninskaya", 5),
+
+            metroData.getStationByNameAndLineId("Serpukhovskaya", 9),
+            metroData.getStationByNameAndLineId("Tulskaya", 9),
+        ).mapNotNull { it }
+
+        val expectedTimeInSecs = 21 * SECS_IN_MIN
+
+        verifyShortestPath(
+            startStationName = "Shosse Entuziastov",
+            startStationLineId = 8,
+            finishStationName = "Tulskaya",
+            finishStationLineId = 9,
             expectedPath = expectedPath,
             expectedTimeInSecs = expectedTimeInSecs,
         )
@@ -128,12 +157,14 @@ class TestMetroGraph {
             finishStationName, finishStationLineId
         )
 
-        println(actualPath)
+        for (element in actualPath!!) {
+            println("${element.name}, ${element.lineId}")
+        }
 
         println(expectedPath)
 
         assertNotNull(actualPath, "Путь не найден.")
-        assertTrue(actualPath!!.isNotEmpty(), "Путь не должен быть пустым.")
+        assertTrue(actualPath.isNotEmpty(), "Путь не должен быть пустым.")
         assertEquals(expectedPath.size, actualPath.size, "Длина пути не совпадает с ожидаемым.")
 
         for (i in expectedPath.indices) {
@@ -145,7 +176,7 @@ class TestMetroGraph {
     }
 
     private fun assertTimeDifferenceWithinEps(expectedTimeInSecs: Int, actualTimeInSecs: Int) {
-        val eps = 8.0
+        val eps = 5.0
 
         val timeDifference = abs(expectedTimeInSecs - actualTimeInSecs)
         val maxAllowedDifference = expectedTimeInSecs * (eps / 100)
