@@ -1,8 +1,6 @@
 package app.gatherround.test_metro
 
-import app.gatherround.loadMetroDataFromFile
 import app.gatherround.metro.MetroData
-import app.gatherround.metro.getSchemeMetadataPath
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
@@ -10,11 +8,10 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 
 class TestMetroData {
-    private lateinit var metroData: MetroData
-
+    private val metroData = MetroData().loadMetroDataFromFile()
     @BeforeEach
     fun setUp() {
-        metroData = loadMetroDataFromFile("C:\\\\Users\\\\test\\\\user\\\\ProjectSeminar2024-25\\\\GatherRound\\\\app\\\\app\\\\src\\\\main\\\\resources\\\\get-scheme-metadata.json")
+
     }
 
     @Test
