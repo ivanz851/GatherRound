@@ -1,24 +1,21 @@
 package app.gatherround.test_metro
 
 import app.gatherround.graph.Dijkstra
-import app.gatherround.loadMetroDataFromFile
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
 import app.gatherround.metro.MetroStation
 import app.gatherround.metro.SECS_IN_MIN
-import app.gatherround.metro.getSchemeMetadataPath
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.math.abs
 
 class TestMetroGraph {
-    private lateinit var metroData: MetroData
+    private val metroData = MetroData().loadMetroDataFromFile()
     private lateinit var metroGraph: MetroGraph
 
     @BeforeEach
     fun setUp() {
-        metroData = loadMetroDataFromFile("C:\\\\Users\\\\test\\\\user\\\\ProjectSeminar2024-25\\\\GatherRound\\\\app\\\\app\\\\src\\\\main\\\\resources\\\\get-scheme-metadata.json")
         metroGraph = MetroGraph(metroData)
     }
 
