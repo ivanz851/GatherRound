@@ -7,6 +7,7 @@ data class MetroStation(
     val name: String,
     val lineId: Int,
     val labelId: Int,
+    var stationUniqueId: Int? = null,
     val boardInfo: BoardInfo? = null,
     val linkIds: List<Int>,
     val isTransferStation: Boolean = false

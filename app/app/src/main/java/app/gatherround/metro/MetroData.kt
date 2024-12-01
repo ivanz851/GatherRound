@@ -20,14 +20,22 @@ data class MetroData(
     val links: Map<String, Link>,
     val transfers: Map<String, Transfer>
 ) {
-    private val stationNameIdMap: Map<Pair<String, Int>, Int> = fillStationNameIdMap()
+    private var stationNameIdMap: Map<Pair<String, Int>, Int> = emptyMap()
+
+    init {
+        stations.forEach { (key, station) ->
+            station.stationUniqueId = key
+        }
+
+        stationNameIdMap = fillStationNameIdMap()
+    }
 
     private fun fillStationNameIdMap(): Map<Pair<String, Int>, Int> {
         val result = mutableMapOf<Pair<String, Int>, Int>()
 
-        for ((stationId, station) in stations) {
+        for ((_, station) in stations) {
             val key = Pair(station.name, station.lineId)
-            result[key] = stationId
+            result[key] = station.stationUniqueId!!
         }
 
         return result
