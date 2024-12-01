@@ -27,8 +27,12 @@ fun main() {
 
     val stations = metroGraph.getVertices()
 
-    stations.forEach { station ->
-        println("${station.name}, ${station.lineId}")
-    }
+    val (actualTimeInSecs, actualPath) =metroGraph.findShortestPath(
+        startStationName = "Shosse Entuziastov",
+        startStationLineId = 14,
+        finishStationName = "Tulskaya",
+        finishStationLineId = 9
+    )
+    println(actualTimeInSecs.toDouble() / 60)
 
 }

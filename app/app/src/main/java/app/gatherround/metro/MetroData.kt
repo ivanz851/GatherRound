@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import java.io.FileInputStream
 import java.util.Properties
 
+const val SECS_IN_MIN = 60
 
 fun getSchemeMetadataPath(): String {
     val properties = Properties()
