@@ -2,23 +2,21 @@ package app.gatherround
 
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
+import app.gatherround.places.PlacesData
 import java.io.File
 import java.io.FileNotFoundException
 
-
-
 fun main() {
-    val metroData = MetroData().loadMetroDataFromFile()
-    val metroGraph = MetroGraph(metroData)
+    val placesData = PlacesData()
 
-    val stations = metroGraph.getVertices()
+    val places = placesData.fetchPlacesInMoscow()
 
-    val (actualTimeInSecs, actualPath) =metroGraph.findShortestPath(
-        startStationName = "Shosse Entuziastov",
-        startStationLineId = 14,
-        finishStationName = "Tulskaya",
-        finishStationLineId = 9
-    )
-    println(actualTimeInSecs.toDouble() / 60)
-    println(metroData.stations.size)
+    if (places.isNotEmpty()) {
+        println("Полученные места:")
+        places.forEach { place ->
+            println(place)
+        }
+    } else {
+        println("Не удалось получить места.")
+    }
 }
