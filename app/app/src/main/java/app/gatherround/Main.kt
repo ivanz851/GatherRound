@@ -12,7 +12,7 @@ fun main() {
     val places = placesData.fetchPlacesInMoscow()
 
     if (places.isNotEmpty()) {
-        println("Полученные места:")
+        println("Полученные места: ${places.size}\n")
         places.forEach { place ->
             println(place)
         }
