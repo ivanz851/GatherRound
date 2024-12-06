@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.okhttp)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
 
