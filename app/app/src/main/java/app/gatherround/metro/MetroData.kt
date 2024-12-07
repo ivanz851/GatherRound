@@ -8,6 +8,10 @@ import java.io.FileNotFoundException
 import java.util.Properties
 
 const val SECS_IN_MIN = 60
+const val MINS_IN_HOUR = 60
+const val SECS_IN_HOUR = SECS_IN_MIN * MINS_IN_HOUR
+const val MAX_ROUTE_TIME = SECS_IN_HOUR
+
 const val metroDataJsonPath = "C:\\\\Users\\\\test\\\\user\\\\ProjectSeminar2024-25\\\\GatherRound\\\\app\\\\app\\\\src\\\\main\\\\resources\\\\get-scheme-metadata.json"
 
 @Serializable
