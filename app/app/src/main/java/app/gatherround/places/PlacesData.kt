@@ -55,7 +55,7 @@ class PlacesData {
     }
 
     fun fetchPlacesInMoscow(): List<Place> {
-        val url = "https://kudago.com/public-api/v1.4/places/?lang=ru&location=msk&fields=id,title,address,location,coords"
+        val url = "https://kudago.com/public-api/v1.4/places/?lang=ru&location=msk&fields=id,title,address,coords,subway"
         val json = performRequest(url)
         return if (json != null) {
             parsePlaces(json)
