@@ -1,5 +1,6 @@
 package app.gatherround.places
 
+import app.gatherround.metro.MetroStation
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -62,5 +63,10 @@ class PlacesData {
         } else {
             emptyList()
         }
+    }
+
+
+    fun getPlacesByStation(metroStation: MetroStation): List<Place> {
+        return emptyList()
     }
 }

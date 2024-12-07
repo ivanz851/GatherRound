@@ -55,4 +55,80 @@ class MetroGraph(private val metroData: MetroData) : Graph<MetroStation>() {
             }
         }
     }
+
+    private fun hasCommonStation(sortedDistances: List<List<Pair<Int, Int>>>,
+                                 t: Int): Pair<Boolean, Int?> {
+        val pointers = IntArray(sortedDistances.size) { 0 }
+        var maxValue: Int = -1
+
+        while (true) {
+            var newMinValue: Int = Int.MAX_VALUE
+            var newMaxValue: Int = -1
+
+            for (i in sortedDistances.indices) {
+                while (pointers[i] < sortedDistances[i].size &&
+                    sortedDistances[i][pointers[i]].first < t &&
+                    sortedDistances[i][pointers[i]].first < maxValue) {
+                    pointers[i]++
+                }
+
+                if (!(pointers[i] < sortedDistances[i].size &&
+                            sortedDistances[i][pointers[i]].first < t)) {
+                    return Pair(false, null)
+                }
+
+                val currentValue: Int = sortedDistances[i][pointers[i]].first
+                if (currentValue < newMinValue) {
+                    newMinValue = currentValue
+                }
+                newMaxValue = maxOf(newMaxValue, currentValue)
+            }
+
+            if (newMinValue == newMaxValue) {
+                return Pair(true, sortedDistances[0][pointers[0]].second)
+            }
+
+            maxValue = newMaxValue
+        }
+    }
+
+    fun findOptimalStation(
+        selectedStations: List<Pair<String, Int>>,
+    ): MetroStation? {
+        val stationIds = selectedStations.mapNotNull { (name, lineId) ->
+            this.metroData.getStationByNameAndLineId(name, lineId)?.stationUniqueId
+        }
+
+        if (stationIds.isEmpty()) {
+            return null
+        }
+
+        val sortedDistances = stationIds.map { stationId ->
+            val distances = Dijkstra<MetroStation>().getDistances(
+                this,
+                metroData.getStationById(stationId)!!
+            )
+            distances
+                .map { (station, distance) -> distance to station.stationUniqueId!! }
+                .sortedBy { it.first }
+        }
+        var left = 0
+        var right: Int = MAX_ROUTE_TIME
+        var optimalStationId: Int? = null
+
+        while (left + 1 < right) {
+            val mid: Int = (left + right) / 2
+            val (exists, stationId) = hasCommonStation(sortedDistances, mid)
+            if (exists) {
+                optimalStationId = stationId
+                right = mid
+            } else {
+                left = mid
+            }
+        }
+
+        return if (optimalStationId != null) {
+            metroData.getStationById(optimalStationId)
+        } else null
+    }
 }

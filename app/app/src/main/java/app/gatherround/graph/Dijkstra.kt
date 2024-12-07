@@ -52,4 +52,9 @@ class Dijkstra<T: Comparable<T>> : ShortestPathsFinder<T> {
         path.reverse()
         return Pair(distance, path)
     }
+
+    fun <T : Comparable<T>> getDistances(graph: Graph<T>, start: T): List<Pair<T, Int>> {
+        val (distances, _) = Dijkstra<T>().calcShortestPathsFromVertex(graph, start)
+        return distances.entries.map { (station, distance) -> station to distance }
+    }
 }
