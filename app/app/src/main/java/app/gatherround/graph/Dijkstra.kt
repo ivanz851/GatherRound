@@ -2,13 +2,16 @@ package app.gatherround.graph
 
 import java.util.TreeSet
 
-class Dijkstra<T: Comparable<T>> : ShortestPathsFinder<T> {
-    fun calcShortestPathsFromVertex(graph: Graph<T>, start: T): Pair<Map<T, Int>, Map<T, T?>> {
-        val distances = graph.getVertices().associateWith { Int.MAX_VALUE }.toMutableMap()
-        val ancestors = mutableMapOf<T, T?>()
+class Dijkstra<Vertex: Comparable<Vertex>> : ShortestPathsFinder<Vertex> {
+    fun calcShortestPathsFromVertex(graph: Graph<Vertex>,
+                                    start: Vertex):
+            Pair<Map<Vertex, Int>, Map<Vertex, Vertex?>> {
+        val distances =
+            graph.getVertices().associateWith { Int.MAX_VALUE }.toMutableMap()
+        val ancestors = mutableMapOf<Vertex, Vertex?>()
 
         val prioritySet = TreeSet(
-            compareBy<Pair<Int, T>> { it.first }.thenBy { it.second }
+            compareBy<Pair<Int, Vertex>> { it.first }.thenBy { it.second }
         )
 
         distances[start] = 0
@@ -33,16 +36,19 @@ class Dijkstra<T: Comparable<T>> : ShortestPathsFinder<T> {
         return Pair(distances, ancestors)
     }
 
-    override fun getShortestPath(graph: Graph<T>, start: T, finish: T): Pair<Int, List<T>?> {
-        val (distances, ancestors) = calcShortestPathsFromVertex(graph, start)
+    override fun getShortestPath(graph: Graph<Vertex>,
+                                 start: Vertex,
+                                 finish: Vertex): Pair<Int, List<Vertex>?> {
+        val (distances, ancestors) =
+            calcShortestPathsFromVertex(graph, start)
         val distance = distances[finish] ?: Int.MAX_VALUE
 
         if (distance == Int.MAX_VALUE) {
             return Pair(distance, null)
         }
 
-        val path = mutableListOf<T>()
-        var current: T? = finish
+        val path = mutableListOf<Vertex>()
+        var current: Vertex? = finish
 
         while (current != null) {
             path.add(current)
@@ -53,8 +59,9 @@ class Dijkstra<T: Comparable<T>> : ShortestPathsFinder<T> {
         return Pair(distance, path)
     }
 
-    fun <T : Comparable<T>> getDistances(graph: Graph<T>, start: T): List<Pair<T, Int>> {
-        val (distances, _) = Dijkstra<T>().calcShortestPathsFromVertex(graph, start)
-        return distances.entries.map { (station, distance) -> station to distance }
+    fun getDistances(graph: Graph<Vertex>, start: Vertex): Map<Vertex, Int> {
+        val (distances, _) =
+            Dijkstra<Vertex>().calcShortestPathsFromVertex(graph, start)
+        return distances
     }
 }
