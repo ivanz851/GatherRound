@@ -181,4 +181,61 @@ class TestMetroGraph {
         assertTrue(timeDifference < maxAllowedDifference,
             "Время в пути отличается более чем на $eps%. Ожидалось: $expectedTimeInSecs сек, получено: $actualTimeInSecs сек.")
     }
+
+    /*
+    @Test
+    fun testLargeLists() {
+        val sortedDistances = listOf(
+            listOf(
+                50 to 1,
+                60 to 2,
+                70 to 3,
+                80 to 4,
+                90 to 5,
+                100 to 6,
+                110 to 7,
+                120 to 8,
+                130 to 9,
+                140 to 10,
+                150 to 11
+            ),
+            listOf(
+                60 to 1,
+                70 to 2,
+                80 to 3,
+                90 to 4,
+                100 to 5,
+                110 to 6,
+                120 to 7,
+                130 to 8,
+                140 to 9,
+                150 to 11,
+                160 to 12
+            ),
+            listOf(
+                55 to 1,
+                65 to 2,
+                75 to 3,
+                85 to 4,
+                95 to 5,
+                105 to 6,
+                115 to 7,
+                125 to 8,
+                135 to 9,
+                145 to 10,
+                150 to 11,
+                155 to 12,
+                156 to 13,
+                157 to 14,
+                1000 to 15,
+            )
+        )
+        val t = 160
+        val result = metroGraph.hasCommonStation(sortedDistances, t)
+
+        assert(result.first == true) { "Ошибка: Ожидалась общая станция, но результат ${result.first}" }
+        assert(result.second == 11) { "Ошибка: Ожидалась станция с ID 11, но результат ${result.second}" }
+    }
+    */
+
 }
