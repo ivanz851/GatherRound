@@ -1,5 +1,6 @@
 package app.gatherround.places
 
+import app.gatherround.metro.MetroStation
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -8,6 +9,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import java.net.URLEncoder
 
 
 class PlacesData {
@@ -56,6 +58,18 @@ class PlacesData {
 
     fun fetchPlacesInMoscow(): List<Place> {
         val url = "https://kudago.com/public-api/v1.4/places/?lang=ru&location=msk&fields=id,title,address,coords,subway"
+        val json = performRequest(url)
+        return if (json != null) {
+            parsePlaces(json)
+        } else {
+            emptyList()
+        }
+    }
+
+
+    fun getPlacesByStation(metroStation: MetroStation): List<Place> {
+        val stationName = URLEncoder.encode(metroStation.name, "UTF-8")
+        val url = "https://kudago.com/public-api/v1.4/places/?lang=ru&location=msk&fields=id,title,address,coords,subway&subway=${stationName}"
         val json = performRequest(url)
         return if (json != null) {
             parsePlaces(json)

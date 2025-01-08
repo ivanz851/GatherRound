@@ -1,5 +1,7 @@
 package app.gatherround.graph
 
-interface ShortestPathsFinder<T> {
-    fun getShortestPath(graph: Graph<T>, start: T, finish: T): Pair<Int, List<T>?>
+interface ShortestPathsFinder<Vertex: Comparable<Vertex>> {
+    fun getShortestPath(graph: Graph<Vertex>,
+                        start: Vertex,
+                        finish: Vertex): Pair<Int, List<Vertex>?>
 }
