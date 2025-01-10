@@ -12,7 +12,7 @@ const val MINS_IN_HOUR = 60
 const val SECS_IN_HOUR = SECS_IN_MIN * MINS_IN_HOUR
 const val MAX_ROUTE_TIME = 5 * SECS_IN_HOUR
 
-const val metroDataJsonPath = "C:\\\\Users\\\\test\\\\user\\\\ProjectSeminar2024-25\\\\GatherRound\\\\app\\\\app\\\\src\\\\main\\\\resources\\\\get-scheme-metadata.json"
+const val metroDataJsonPath = "C:\\\\Users\\\\test\\\\user\\\\ProjectSeminar2024-25\\\\GatherRound\\\\app\\\\app\\\\src\\\\main\\\\assets\\\\get-scheme-metadata.json"
 
 @Serializable
 data class MetroData(
@@ -24,12 +24,14 @@ data class MetroData(
     private var stationNameIdMap: Map<Pair<String, Int>, Station> = emptyMap()
     private var stationIdMap: Map<Int, Station> = emptyMap()
     private var lineNameMap: Map<Int, Line> = emptyMap()
+    private var lineIndexMap: Map<String, Line> = emptyMap()
     var stationsNames: List<Pair<String, String>> = emptyList()
 
     init {
         stationIdMap = fillStationIdMap()
         stationNameIdMap = fillStationNameIdMap()
         lineNameMap = fillLineNameMap()
+        lineIndexMap = fillLineIndexMap()
         stationsNames = fillStationsNames()
     }
 
@@ -89,6 +91,16 @@ data class MetroData(
         return result
     }
 
+    private fun fillLineIndexMap(): Map<String, Line> {
+        val result = mutableMapOf<String, Line>()
+
+        for (line in lines) {
+            result[line.name[RUSSIAN]!!] = line
+        }
+
+        return result
+    }
+
     private fun fillStationsNames(): List<Pair<String, String>> {
         val result = mutableListOf<Pair<String, String>>()
 
@@ -106,6 +118,10 @@ data class MetroData(
 
     fun getStationByNameAndLineId(stationName: String, stationLineId: Int): Station? {
         return stationNameIdMap[Pair(stationName, stationLineId)]
+    }
+
+    fun getLineIndexByName(lineName: String): Line? {
+        return lineIndexMap[lineName]
     }
 
 

@@ -13,13 +13,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import app.gatherround.metro.MetroData
+import app.gatherround.metro.MetroGraph
+import app.gatherround.metro.Station
+import app.gatherround.places.Place
+import app.gatherround.places.PlacesData
+import kotlinx.coroutines.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class StationInputActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,25 +34,39 @@ class StationInputActivity : ComponentActivity() {
 
         val metroData = MetroData.loadFromAssets(applicationContext, "get-scheme-metadata.json")
         val stationsNames = metroData.stationsNames
+        val graph = MetroGraph(metroData)
 
         setContent {
-            MyApp(stationsNames)
+            MyApp(
+                stationsNames,
+                metroData,
+                graph
+            )
         }
     }
 }
 
 @Composable
-fun MyApp(stationsNames: List<Pair<String, String>>) {
+fun MyApp(stationsNames: List<Pair<String, String>>,
+          metroData: MetroData,
+          graph: MetroGraph) {
     MaterialTheme {
-        StationInputScreen(stationsNames)
+        StationInputScreen(
+            stationsNames,
+            metroData,
+            graph
+        )
     }
 }
 
 @Composable
-fun StationInputScreen(stationsNames: List<Pair<String, String>>) {
+fun StationInputScreen(
+    stationsNames: List<Pair<String, String>>,
+    metroData: MetroData,
+    graph: MetroGraph
+) {
     var stations by remember { mutableStateOf(listOf("")) }
-    val selectedStations =
-        remember { mutableStateOf(mutableSetOf<Pair<String, String>>()) }
+    val selectedStations = remember { mutableStateOf(mutableSetOf<Pair<String, String>>()) }
 
     val context = LocalContext.current
 
@@ -82,15 +103,33 @@ fun StationInputScreen(stationsNames: List<Pair<String, String>>) {
 
         Button(
             onClick = {
-                val events = listOf(
-                    "Концерт на станции Печатники",
-                    "Фестиваль на станции Курская",
-                    "Выставка на станции Тверская"
-                )
-                val intent = Intent(context, EventListActivity::class.java).apply {
-                    putStringArrayListExtra("events", ArrayList(events))
+                CoroutineScope(Dispatchers.Main).launch {
+                    try {
+                        val chosenStations = selectedStations.value.map { (station, line) ->
+                            metroData.getStationByNameAndLineId(
+                                station,
+                                metroData.getLineIndexByName(line)!!.id
+                            )!!
+                        }.toSet()
+
+                        val placesData = PlacesData()
+
+                        // Фоновая обработка поиска мероприятий
+                        val eventsJson = withContext(Dispatchers.IO) {
+                            findOptimalPlaces(graph, chosenStations, placesData)
+                        }!!
+
+                        //val eventsJson = Json.encodeToString(events)
+
+                        val intent = Intent(context, EventListActivity::class.java).apply {
+                            putExtra("places_json", eventsJson)
+                        }
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        // Показываем сообщение об ошибке или обрабатываем исключение
+                    }
                 }
-                context.startActivity(intent)
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Green)
         ) {
@@ -164,11 +203,4 @@ fun StationInputField(
             }
         }
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    MyApp(listOf(Pair("Печатники", "Line 1")))
 }
