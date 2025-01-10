@@ -3,7 +3,8 @@ package app.gatherround.test_metro
 import app.gatherround.graph.Dijkstra
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
-import app.gatherround.metro.MetroStation
+import app.gatherround.metro.RUSSIAN
+import app.gatherround.metro.Station
 import app.gatherround.metro.SECS_IN_MIN
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -20,55 +21,74 @@ class TestMetroGraph {
     }
 
     @Test
-    fun testDijkstraAlgorithmReachesAllStations() {
-        val startStation = metroData.getStationByNameAndLineId("Tretyakovskaya", 6)
+    fun testDijkstraAlgorithmReachesStaionsAtSameLine() {
+        val startStation =
+            metroData.getStationByNameAndLineId("Третьяковская", 5)
+        val finishStation =
+            metroData.getStationByNameAndLineId("Медведково", 5)
 
-        val dijkstra = Dijkstra<MetroStation>()
-        val (distances, ancestors) = dijkstra.calcShortestPathsFromVertex(metroGraph, startStation!!)
+
+        val dijkstra = Dijkstra<Station>()
+        val (distances, ancestors) =
+            dijkstra.calcShortestPathsFromVertex(metroGraph, startStation!!)
+
+        assertTrue(distances[finishStation] != Int.MAX_VALUE,
+            "Станция ${finishStation!!.name[RUSSIAN]} недостижима.")
+    }
+
+    @Test
+    fun testDijkstraAlgorithmReachesAllStations() {
+        val startStation =
+            metroData.getStationByNameAndLineId("Третьяковская", 5)
+
+        val dijkstra = Dijkstra<Station>()
+        val (distances, ancestors) =
+            dijkstra.calcShortestPathsFromVertex(metroGraph, startStation!!)
 
         for ((station, distance) in distances) {
-            assertTrue(distance != Int.MAX_VALUE, "Станция ${station.name} недостижима.")
+            assertTrue(distance != Int.MAX_VALUE,
+                "Станция ${station.name[RUSSIAN]} недостижима.")
         }
 
-        for ((station, predecessor) in ancestors) {
+        for ((station, ancestor) in ancestors) {
             if (station != startStation) {
-                assertNotNull(predecessor, "У станции ${station.name} нет предка.")
+                assertNotNull(ancestor, "У станции ${station.name} нет предка.")
             }
         }
     }
 
     @Test
-    fun testFindShortestPath_from_ParkPobedy3_to_Kotelniki7() {
+    fun testFindShortestPath_from_ParkPobedy3_to_Kotelniki8() {
         val expectedPath = listOf(
-            metroData.getStationByNameAndLineId("Park Pobedy", 3),
-            metroData.getStationByNameAndLineId("Kiyevskaya", 3),
+            metroData.getStationByNameAndLineId("Парк Победы", 3),
+            metroData.getStationByNameAndLineId("Киевская", 3),
 
-            metroData.getStationByNameAndLineId("Kiyevskaya", 5),
-            metroData.getStationByNameAndLineId("Park Kultury", 5),
-            metroData.getStationByNameAndLineId("Oktyabrskaya", 5),
-            metroData.getStationByNameAndLineId("Dobryninskaya", 5),
-            metroData.getStationByNameAndLineId("Paveletskaya", 5),
-            metroData.getStationByNameAndLineId("Taganskaya", 5),
+            metroData.getStationByNameAndLineId("Киевская", 6),
+            metroData.getStationByNameAndLineId("Парк культуры", 6),
+            metroData.getStationByNameAndLineId("Октябрьская", 6),
+            metroData.getStationByNameAndLineId("Добрынинская", 6),
+            metroData.getStationByNameAndLineId("Павелецкая", 6),
+            metroData.getStationByNameAndLineId("Таганская", 6),
 
-            metroData.getStationByNameAndLineId("Taganskaya", 7),
-            metroData.getStationByNameAndLineId("Proletarskaya", 7),
-            metroData.getStationByNameAndLineId("Volgogradsky Prospekt", 7),
-            metroData.getStationByNameAndLineId("Tekstilshchiki", 7),
-            metroData.getStationByNameAndLineId("Kuzminki", 7),
-            metroData.getStationByNameAndLineId("Ryazanskiy Prospekt", 7),
-            metroData.getStationByNameAndLineId("Vykhino", 7),
-            metroData.getStationByNameAndLineId("Lermontovsky Prospekt", 7),
-            metroData.getStationByNameAndLineId("Zhulebino", 7),
-            metroData.getStationByNameAndLineId("Kotelniki", 7),
+            metroData.getStationByNameAndLineId("Таганская", 8),
+            metroData.getStationByNameAndLineId("Пролетарская", 8),
+            metroData.getStationByNameAndLineId("Волгоградский проспект", 8),
+            metroData.getStationByNameAndLineId("Текстильщики", 8),
+            metroData.getStationByNameAndLineId("Кузьминки", 8),
+            metroData.getStationByNameAndLineId("Рязанский проспект ", 8),
+            metroData.getStationByNameAndLineId("Выхино", 8),
+            metroData.getStationByNameAndLineId("Лермонтовский проспект", 8),
+            metroData.getStationByNameAndLineId("Жулебино", 8),
+            metroData.getStationByNameAndLineId("Котельники", 8),
         ).mapNotNull { it }
 
         val expectedTimeInSecs = 47 * SECS_IN_MIN
 
         verifyShortestPath(
-            startStationName = "Park Pobedy",
+            startStationName = "Парк Победы",
             startStationLineId = 3,
-            finishStationName = "Kotelniki",
-            finishStationLineId = 7,
+            finishStationName = "Котельники",
+            finishStationLineId = 8,
             expectedPath = expectedPath,
             expectedTimeInSecs = expectedTimeInSecs,
         )
@@ -146,7 +166,7 @@ class TestMetroGraph {
         startStationLineId: Int,
         finishStationName: String,
         finishStationLineId: Int,
-        expectedPath: List<MetroStation>,
+        expectedPath: List<Station>,
         expectedTimeInSecs: Int
     ) {
         val (actualTimeInSecs, actualPath) = metroGraph.findShortestPath(
@@ -154,14 +174,8 @@ class TestMetroGraph {
             finishStationName, finishStationLineId
         )
 
-        for (element in actualPath!!) {
-            println("${element.name}, ${element.lineId}")
-        }
-
-        println(expectedPath)
-
         assertNotNull(actualPath, "Путь не найден.")
-        assertTrue(actualPath.isNotEmpty(), "Путь не должен быть пустым.")
+        assertTrue(actualPath!!.isNotEmpty(), "Путь не должен быть пустым.")
         assertEquals(expectedPath.size, actualPath.size, "Длина пути не совпадает с ожидаемым.")
 
         for (i in expectedPath.indices) {
@@ -173,7 +187,7 @@ class TestMetroGraph {
     }
 
     private fun assertTimeDifferenceWithinEps(expectedTimeInSecs: Int, actualTimeInSecs: Int) {
-        val eps = 5.0
+        val eps = 3.0
 
         val timeDifference = abs(expectedTimeInSecs - actualTimeInSecs)
         val maxAllowedDifference = expectedTimeInSecs * (eps / 100)
@@ -181,61 +195,4 @@ class TestMetroGraph {
         assertTrue(timeDifference < maxAllowedDifference,
             "Время в пути отличается более чем на $eps%. Ожидалось: $expectedTimeInSecs сек, получено: $actualTimeInSecs сек.")
     }
-
-    /*
-    @Test
-    fun testLargeLists() {
-        val sortedDistances = listOf(
-            listOf(
-                50 to 1,
-                60 to 2,
-                70 to 3,
-                80 to 4,
-                90 to 5,
-                100 to 6,
-                110 to 7,
-                120 to 8,
-                130 to 9,
-                140 to 10,
-                150 to 11
-            ),
-            listOf(
-                60 to 1,
-                70 to 2,
-                80 to 3,
-                90 to 4,
-                100 to 5,
-                110 to 6,
-                120 to 7,
-                130 to 8,
-                140 to 9,
-                150 to 11,
-                160 to 12
-            ),
-            listOf(
-                55 to 1,
-                65 to 2,
-                75 to 3,
-                85 to 4,
-                95 to 5,
-                105 to 6,
-                115 to 7,
-                125 to 8,
-                135 to 9,
-                145 to 10,
-                150 to 11,
-                155 to 12,
-                156 to 13,
-                157 to 14,
-                1000 to 15,
-            )
-        )
-        val t = 160
-        val result = metroGraph.hasCommonStation(sortedDistances, t)
-
-        assert(result.first == true) { "Ошибка: Ожидалась общая станция, но результат ${result.first}" }
-        assert(result.second == 11) { "Ошибка: Ожидалась станция с ID 11, но результат ${result.second}" }
-    }
-    */
-
 }

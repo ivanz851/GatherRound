@@ -43,6 +43,9 @@ class Dijkstra<Vertex: Comparable<Vertex>> : ShortestPathsFinder<Vertex> {
             calcShortestPathsFromVertex(graph, start)
         val distance = distances[finish] ?: Int.MAX_VALUE
 
+        println("distances = ${distances}")
+
+
         if (distance == Int.MAX_VALUE) {
             return Pair(distance, null)
         }
