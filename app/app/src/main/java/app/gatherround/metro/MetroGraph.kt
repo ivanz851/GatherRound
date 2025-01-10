@@ -12,18 +12,31 @@ class MetroGraph(private val metroData: MetroData) : Graph<Station>() {
         metroData.connections.forEach { connection ->
             addConnection(connection)
         }
+
+        metroData.transitions.forEach { transition ->
+            addTransition(transition)
+        }
     }
 
     private fun addStation(station: Station) {
         addVertex(station)
     }
 
-    private fun addConnection(link: Connection) {
-        val start: Station? = metroData.getStationById(link.stationFromId)
-        val finish: Station? = metroData.getStationById(link.stationToId)
+    private fun addConnection(connection: Connection) {
+        val start: Station? = metroData.getStationById(connection.stationFromId)
+        val finish: Station? = metroData.getStationById(connection.stationToId)
 
         if (start != null && finish != null) {
-            addEdge(start, finish, link.pathLength)
+            addEdge(start, finish, connection.pathLength)
+        }
+    }
+
+    private fun addTransition(transition: Transition) {
+        val start: Station? = metroData.getStationById(transition.stationFromId)
+        val finish: Station? = metroData.getStationById(transition.stationToId)
+
+        if (start != null && finish != null) {
+            addEdge(start, finish, transition.pathLength)
         }
     }
 
@@ -45,14 +58,16 @@ class MetroGraph(private val metroData: MetroData) : Graph<Station>() {
     }
 
     fun printAllConnections() {
-        metroData.connections.forEach { link ->
-            val startStation = metroData.getStationById(link.stationFromId)
-            val finishStation = metroData.getStationById(link.stationToId)
-            val timeInSecs = link.pathLength
+        val edges = this.getEdges()
 
-            if (startStation != null && finishStation != null) {
-                println("${startStation.name}, ${startStation.lineId} -> ${finishStation.name}, ${finishStation.lineId}, время в пути: ${timeInSecs.toDouble()/60} мин")
-            }
+        for (edge in edges) {
+            val startStation = edge.first
+            val finishStation = edge.second.finish
+            val transferTime = edge.second.weight
+
+            println("${startStation.name[RUSSIAN]}, ${startStation.lineId} -> " +
+                    "${finishStation.name[RUSSIAN]}, ${finishStation.lineId}, " +
+                    "время в пути: ${transferTime.toDouble()/60} мин")
         }
     }
 
