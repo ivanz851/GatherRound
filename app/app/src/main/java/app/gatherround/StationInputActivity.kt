@@ -17,31 +17,30 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.text.TextStyle
-
-
-val metroStations = listOf(
-    "Краснопресненская", "Киевская", "Баррикадная", "Китай-город", "Таганская", "Чистые пруды",
-    "Маяковская", "Кольцевая", "Бауманская", "Площадь Революции", "Арбатская", "Новослободская"
-)
+import app.gatherround.metro.MetroData
 
 class StationInputActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val metroData = MetroData.loadFromAssets(applicationContext, "get-scheme-metadata.json")
+        val stationsNames = metroData.stationsNames
+
         setContent {
-            MyApp()
+            MyApp(stationsNames)
         }
     }
 }
 
 @Composable
-fun MyApp() {
+fun MyApp(stationsNames: List<Pair<String, String>>) {
     MaterialTheme {
-        StationInputScreen()
+        StationInputScreen(stationsNames)
     }
 }
 
 @Composable
-fun StationInputScreen() {
+fun StationInputScreen(stationsNames: List<Pair<String, String>>) {
     var stations by remember { mutableStateOf(listOf("")) }
     Column(
         modifier = Modifier
@@ -54,6 +53,7 @@ fun StationInputScreen() {
             StationInputField(
                 index = index,
                 station = station,
+                stationsNames = stationsNames,
                 onValueChange = { newStation, ind ->
                     stations = stations.toMutableList().apply { set(ind, newStation) }
                 }
@@ -71,10 +71,15 @@ fun StationInputScreen() {
 }
 
 @Composable
-fun StationInputField(index: Int, station: String, onValueChange: (String, Int) -> Unit) {
+fun StationInputField(
+    index: Int,
+    station: String,
+    stationsNames: List<Pair<String, String>>,
+    onValueChange: (String, Int) -> Unit
+) {
     var text by remember { mutableStateOf(station) }
     var expanded by remember { mutableStateOf(false) }
-    var filteredStations by remember { mutableStateOf(metroStations) }
+    var filteredStations by remember { mutableStateOf(stationsNames) }
 
     Box(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -82,7 +87,8 @@ fun StationInputField(index: Int, station: String, onValueChange: (String, Int) 
                 value = text,
                 onValueChange = { newText: String ->
                     text = newText
-                    filteredStations = metroStations.filter { it.startsWith(newText, ignoreCase = true) }
+                    filteredStations =
+                        stationsNames.filter { it.first.startsWith(newText, ignoreCase = true) }
                     expanded = true
                 },
                 modifier = Modifier
@@ -94,7 +100,7 @@ fun StationInputField(index: Int, station: String, onValueChange: (String, Int) 
 
             if (expanded && filteredStations.isNotEmpty()) {
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    items(filteredStations) { station ->
+                    items(filteredStations) { (station, line) ->
                         Text(
                             text = station,
                             modifier = Modifier
@@ -117,5 +123,5 @@ fun StationInputField(index: Int, station: String, onValueChange: (String, Int) 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    MyApp()
+    MyApp(listOf(Pair("Печатники", "Line 1")))
 }
