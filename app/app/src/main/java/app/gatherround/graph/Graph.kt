@@ -34,6 +34,17 @@ open class Graph<Vertex: Comparable<Vertex>> {
         }
     }
 
+    fun getEdges(): List<Pair<Vertex, Edge>> {
+        val res = mutableListOf<Pair<Vertex, Edge>>()
+
+        for ((vertex, edges) in adjacencyList) {
+            for (edge in edges) {
+                res.add(Pair(vertex, edge))
+            }
+        }
+        return res
+    }
+
     fun findOptimalVertex(
         chosenVertexes: Set<Vertex>,
     ): Pair<Vertex?, Int> {

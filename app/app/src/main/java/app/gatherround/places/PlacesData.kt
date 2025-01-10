@@ -1,5 +1,6 @@
 package app.gatherround.places
 
+import app.gatherround.metro.Location
 import app.gatherround.metro.RUSSIAN
 import app.gatherround.metro.Station
 import okhttp3.OkHttpClient
@@ -67,19 +68,24 @@ class PlacesData {
         }
     }
 
-
-    fun getPlacesByStation(metroStation: Station): List<Place> {
-        /// TODO
-        /*
-        val stationName = URLEncoder.encode(metroStation.name[RUSSIAN], "UTF-8")
-        val url = "https://kudago.com/public-api/v1.4/places/?lang=ru&location=msk&fields=id,title,address,coords,subway&subway=${stationName}"
+    fun getPlacesByLocationAndRadius(location: Location, radius: Int): List<Place> {
+        val url = "https://kudago.com/public-api/v1.4/places/" +
+                "?lang=ru" +
+                "&location=msk" +
+                "&fields=id,title,address,coords,subway" +
+                "&lon=${location.lon}" +
+                "&lat=${location.lat}" +
+                "&radius=$radius"
         val json = performRequest(url)
+
         return if (json != null) {
             parsePlaces(json)
         } else {
             emptyList()
         }
-         */
-        return emptyList()
+    }
+
+    fun getPlacesByStation(station: Station): List<Place> {
+        return getPlacesByLocationAndRadius(station.location!!, 1200)
     }
 }
