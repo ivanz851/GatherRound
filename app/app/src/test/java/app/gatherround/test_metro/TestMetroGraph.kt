@@ -3,7 +3,7 @@ package app.gatherround.test_metro
 import app.gatherround.graph.Dijkstra
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
-import app.gatherround.metro.MetroStation
+import app.gatherround.metro.Station
 import app.gatherround.metro.SECS_IN_MIN
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
@@ -23,7 +23,7 @@ class TestMetroGraph {
     fun testDijkstraAlgorithmReachesAllStations() {
         val startStation = metroData.getStationByNameAndLineId("Tretyakovskaya", 6)
 
-        val dijkstra = Dijkstra<MetroStation>()
+        val dijkstra = Dijkstra<Station>()
         val (distances, ancestors) = dijkstra.calcShortestPathsFromVertex(metroGraph, startStation!!)
 
         for ((station, distance) in distances) {
@@ -146,7 +146,7 @@ class TestMetroGraph {
         startStationLineId: Int,
         finishStationName: String,
         finishStationLineId: Int,
-        expectedPath: List<MetroStation>,
+        expectedPath: List<Station>,
         expectedTimeInSecs: Int
     ) {
         val (actualTimeInSecs, actualPath) = metroGraph.findShortestPath(
