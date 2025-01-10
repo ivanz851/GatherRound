@@ -1,5 +1,6 @@
 package app.gatherround
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import app.gatherround.metro.MetroData
 
@@ -42,6 +44,11 @@ fun MyApp(stationsNames: List<Pair<String, String>>) {
 @Composable
 fun StationInputScreen(stationsNames: List<Pair<String, String>>) {
     var stations by remember { mutableStateOf(listOf("")) }
+    val selectedStations =
+        remember { mutableStateOf(mutableSetOf<Pair<String, String>>()) }
+
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -56,6 +63,9 @@ fun StationInputScreen(stationsNames: List<Pair<String, String>>) {
                 stationsNames = stationsNames,
                 onValueChange = { newStation, ind ->
                     stations = stations.toMutableList().apply { set(ind, newStation) }
+                },
+                onSelect = { station, line ->
+                    selectedStations.value.add(station to line)
                 }
             )
         }
@@ -67,6 +77,31 @@ fun StationInputScreen(stationsNames: List<Pair<String, String>>) {
                 Text("Добавить станцию")
             }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                val events = listOf(
+                    "Концерт на станции Печатники",
+                    "Фестиваль на станции Курская",
+                    "Выставка на станции Тверская"
+                )
+                val intent = Intent(context, EventListActivity::class.java).apply {
+                    putStringArrayListExtra("events", ArrayList(events))
+                }
+                context.startActivity(intent)
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Green)
+        ) {
+            Text("Найти мероприятия", color = Color.White)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Text("Выбранные станции:")
+        selectedStations.value.forEach { (station, line) ->
+            Text("- $station ($line)")
+        }
     }
 }
 
@@ -75,7 +110,8 @@ fun StationInputField(
     index: Int,
     station: String,
     stationsNames: List<Pair<String, String>>,
-    onValueChange: (String, Int) -> Unit
+    onValueChange: (String, Int) -> Unit,
+    onSelect: (String, String) -> Unit
 ) {
     var text by remember { mutableStateOf(station) }
     var expanded by remember { mutableStateOf(false) }
@@ -107,6 +143,7 @@ fun StationInputField(
                                 .clickable {
                                     text = station
                                     onValueChange(station, index)
+                                    onSelect(station, line)
                                     expanded = false
                                 }
                                 .padding(8.dp),
