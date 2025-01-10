@@ -3,41 +3,54 @@ package app.gatherround.metro
 import app.gatherround.graph.Dijkstra
 import app.gatherround.graph.Graph
 
-class MetroGraph(private val metroData: MetroData) : Graph<MetroStation>() {
+class MetroGraph(private val metroData: MetroData) : Graph<Station>() {
     init {
-        metroData.stations.values.forEach { station ->
+        metroData.stations.forEach { station ->
             addStation(station)
         }
 
-        metroData.links.values.forEach { link ->
-            addLink(link)
+        metroData.connections.forEach { connection ->
+            addConnection(connection)
+        }
+
+        metroData.transitions.forEach { transition ->
+            addTransition(transition)
         }
     }
 
-    private fun addStation(station: MetroStation) {
+    private fun addStation(station: Station) {
         addVertex(station)
     }
 
-    private fun addLink(link: Link) {
-        val start: MetroStation? = metroData.getStationById(link.fromStationId)
-        val finish: MetroStation? = metroData.getStationById(link.toStationId)
+    private fun addConnection(connection: Connection) {
+        val start: Station? = metroData.getStationById(connection.stationFromId)
+        val finish: Station? = metroData.getStationById(connection.stationToId)
 
         if (start != null && finish != null) {
-            addEdge(start, finish, link.weightTime)
+            addEdge(start, finish, connection.pathLength)
+        }
+    }
+
+    private fun addTransition(transition: Transition) {
+        val start: Station? = metroData.getStationById(transition.stationFromId)
+        val finish: Station? = metroData.getStationById(transition.stationToId)
+
+        if (start != null && finish != null) {
+            addEdge(start, finish, transition.pathLength)
         }
     }
 
     fun findShortestPath(startStationName: String,
                          startStationLineId: Int,
                          finishStationName: String,
-                         finishStationLineId: Int): Pair<Int, List<MetroStation>?> {
-        val start: MetroStation? =
+                         finishStationLineId: Int): Pair<Int, List<Station>?> {
+        val start: Station? =
             metroData.getStationByNameAndLineId(startStationName, startStationLineId)
-        val finish: MetroStation? =
+        val finish: Station? =
             metroData.getStationByNameAndLineId(finishStationName, finishStationLineId)
 
         return if (start != null && finish != null) {
-            val (distance, path) = Dijkstra<MetroStation>().getShortestPath(this, start, finish)
+            val (distance, path) = Dijkstra<Station>().getShortestPath(this, start, finish)
             Pair(distance, path)
         } else {
             Pair(-1, emptyList())
@@ -45,14 +58,16 @@ class MetroGraph(private val metroData: MetroData) : Graph<MetroStation>() {
     }
 
     fun printAllConnections() {
-        metroData.links.values.forEach { link ->
-            val startStation = metroData.getStationById(link.fromStationId)
-            val finishStation = metroData.getStationById(link.toStationId)
-            val timeInSecs = link.weightTime
+        val edges = this.getEdges()
 
-            if (startStation != null && finishStation != null) {
-                println("${startStation.name}, ${startStation.lineId} -> ${finishStation.name}, ${finishStation.lineId}, время в пути: ${timeInSecs.toDouble()/60} мин")
-            }
+        for (edge in edges) {
+            val startStation = edge.first
+            val finishStation = edge.second.finish
+            val transferTime = edge.second.weight
+
+            println("${startStation.name[RUSSIAN]}, ${startStation.lineId} -> " +
+                    "${finishStation.name[RUSSIAN]}, ${finishStation.lineId}, " +
+                    "время в пути: ${transferTime.toDouble()/60} мин")
         }
     }
 

@@ -1,6 +1,7 @@
 package app.gatherround.test_metro
 
 import app.gatherround.metro.MetroData
+import app.gatherround.metro.RUSSIAN
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
@@ -16,16 +17,16 @@ class TestMetroData {
 
     @Test
     fun testGetStationByNameAndLineId_InvalidLineId() {
-        val station = metroData.getStationByNameAndLineId("Tretyakovskaya", 5)
+        val station = metroData.getStationByNameAndLineId("Третьяковская", 10)
         assertNull(station, "Станция не должна быть найдена на этой линии")
     }
 
     @Test
     fun testGetStationByNameAndLineId() {
-        val station = metroData.getStationByNameAndLineId("Kiyevskaya", 5)
+        val station = metroData.getStationByNameAndLineId("Киевская", 6)
 
         assertNotNull(station, "Станция не найдена.")
-        assertEquals("Kiyevskaya", station!!.name, "Название станции не совпадает.")
-        assertEquals(5, station.lineId, "Идентификатор линии станции не совпадает.")
+        assertEquals("Киевская", station!!.name[RUSSIAN], "Название станции не совпадает.")
+        assertEquals(6, station.lineId, "Идентификатор линии станции не совпадает.")
     }
 }
