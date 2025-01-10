@@ -2,13 +2,13 @@ package app.gatherround
 
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
-import app.gatherround.metro.MetroStation
+import app.gatherround.metro.Station
 import app.gatherround.places.Place
 import app.gatherround.places.PlacesData
 
 fun findOptimalPlaces(
     metroGraph: MetroGraph,
-    selectedStations: Set<MetroStation>,
+    selectedStations: Set<Station>,
     placesData: PlacesData,
 ): List<Place> {
     val optimalStation = metroGraph.findOptimalVertex(selectedStations).first
