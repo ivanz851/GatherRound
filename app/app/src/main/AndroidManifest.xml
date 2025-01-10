@@ -13,14 +13,20 @@
             android:theme="@style/Theme.GatherRound"
             tools:targetApi="31">
         <activity
+                android:name=".EventListActivity"
+                android:exported="true"
+                android:label="@string/title_activity_event_list"
+                android:theme="@style/Theme.GatherRound" />
+        <activity
                 android:name=".StationInputActivity"
                 android:exported="true"
                 android:label="@string/title_activity_station_input"
                 android:theme="@style/Theme.GatherRound">
-                <intent-filter>
-                    <action android:name="android.intent.action.MAIN" />
-                    <category android:name="android.intent.category.LAUNCHER" />
-                </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
