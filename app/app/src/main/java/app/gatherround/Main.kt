@@ -2,38 +2,39 @@ package app.gatherround
 
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
-import app.gatherround.metro.MetroStation
+import app.gatherround.metro.RUSSIAN
+import app.gatherround.metro.Station
 import app.gatherround.places.Place
 import app.gatherround.places.PlacesData
 
 fun findOptimalPlaces(
     metroGraph: MetroGraph,
-    selectedStations: Set<MetroStation>,
+    selectedStations: Set<Station>,
     placesData: PlacesData,
 ): List<Place> {
     val optimalStation = metroGraph.findOptimalVertex(selectedStations).first
-
-    println("OK, ${optimalStation}\n")
-
     return placesData.getPlacesByStation(optimalStation!!)
 }
 
 fun main() {
     val metroData = MetroData().loadMetroDataFromFile()
 
-    /*
+
     println("MetroData: ${metroData.stations.size}")
-    metroData.stations.forEach { (id, station) ->
-        println("${station.name}, ${station.lineId}")
+    metroData.stations.forEach { station ->
+        println("${station.name[RUSSIAN]}, ${station.lineId}")
     }
-    */
 
     val graph = MetroGraph(metroData)
 
-    val (optimalStataion, time) = graph.findOptimalVertex(setOf(metroData.getStationByNameAndLineId("Tretyakovskaya", 6),
-        metroData.getStationByNameAndLineId("Delovoy Tsentr", 15),
-        metroData.getStationByNameAndLineId("Tsaritsyno", 2))
-        .filterNotNull().toSet())
+    graph.printAllConnections()
+
+    val chosenStations = setOf(metroData.getStationByNameAndLineId("Третьяковская", 5),
+        metroData.getStationByNameAndLineId("Деловой центр", 13),
+        metroData.getStationByNameAndLineId("Царицыно", 2))
+        .filterNotNull().toSet()
+
+    val (optimalStataion, time) = graph.findOptimalVertex(chosenStations)
 
     if (optimalStataion == null) {
         println("Ошибка! Оптимальная станция не найдена.")
@@ -41,15 +42,12 @@ fun main() {
         println("Оптимальная станция: ${optimalStataion.name}, ${optimalStataion.lineId}, " +
                 "максимальное время в пути: $time")
     }
+
     val placesData = PlacesData()
 
     var places = placesData.fetchPlacesInMoscow()
 
-    places = findOptimalPlaces(graph,
-        setOf(metroData.getStationByNameAndLineId("Tretyakovskaya", 6),
-            metroData.getStationByNameAndLineId("Delovoy Tsentr", 15),
-            metroData.getStationByNameAndLineId("Tsaritsyno", 2))
-            .filterNotNull().toSet(), placesData)
+    places = findOptimalPlaces(graph, chosenStations, placesData)
 
     if (places.isNotEmpty()) {
         println("Полученные места: ${places.size}\n")
