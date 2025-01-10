@@ -101,17 +101,27 @@ fun StationInputField(
             if (expanded && filteredStations.isNotEmpty()) {
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     items(filteredStations) { (station, line) ->
-                        Text(
-                            text = station,
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp)
                                 .clickable {
                                     text = station
                                     onValueChange(station, index)
                                     expanded = false
                                 }
-                        )
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = station,
+                                modifier = Modifier.weight(1f),
+                                color = Color.Black
+                            )
+                            Text(
+                                text = line,
+                                color = Color.Gray
+                            )
+                        }
                     }
                 }
             }
