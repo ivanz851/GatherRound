@@ -4,8 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,21 +24,40 @@ class EventListActivity : ComponentActivity() {
         val places = PlacesData().parsePlaces(jsonString)
 
         setContent {
-            EventListScreen(places)
+            EventListScreen(
+                places = places,
+                onBackClick = { finish() }
+            )
         }
     }
 }
 
 @Composable
-fun EventListScreen(places: List<Place>) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text("Список мест для встречи:", style = MaterialTheme.typography.titleMedium)
+fun EventListScreen(places: List<Place>, onBackClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(1f) // Заполнить все доступное пространство
+        ) {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                items(places) { place ->
+                    EventItem(place = place)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        places.forEach { place ->
-            EventItem(place = place)
-            Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = onBackClick,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(top = 16.dp)
+        ) {
+            Text("Назад")
         }
     }
 }
@@ -74,6 +96,7 @@ fun PreviewEventListScreen() {
                 coords = Place.Coordinates(48.8566, 2.3522),
                 subway = "Line A, Line B"
             )
-        )
+        ),
+        onBackClick = {}
     )
 }
