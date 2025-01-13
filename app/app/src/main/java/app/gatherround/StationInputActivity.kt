@@ -62,7 +62,7 @@ fun StationInputScreen(
     metroData: MetroData,
     graph: MetroGraph
 ) {
-    var stations by remember { mutableStateOf(listOf("")) }
+    var stations by remember { mutableStateOf(listOf(StationInput())) }
     val selectedStations = remember { mutableStateOf(mutableSetOf<Pair<String, String>>()) }
 
     val context = LocalContext.current
@@ -74,34 +74,36 @@ fun StationInputScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        stations.forEachIndexed { index, station ->
+        stations.forEach { stationInput ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 StationInputField(
-                    index = index,
-                    station = station,
+                    stationInput = stationInput,
                     stationsNames = stationsNames,
-                    onValueChange = { newStation, ind ->
-                        stations = stations.toMutableList().apply { set(ind, newStation) }
+                    onValueChange = { newStation ->
+                        stations = stations.map {
+                            if (it.id == stationInput.id) it.copy(name = newStation) else it
+                        }
                     },
                     onSelect = { station, line ->
                         selectedStations.value.add(station to line)
                     },
-                    onClose = { ind ->
-                        val stationToRemove = stations[ind]
-                        stations = stations.toMutableList().apply { removeAt(ind) }
-                        selectedStations.value.removeIf { it.first == stationToRemove }
+                    onClose = { stationId ->
+                        // Удаляем станцию по уникальному ID
+                        stations = stations.filter { it.id != stationId }
+                        selectedStations.value.removeIf { it.first == stationInput.name }
                     }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             }
         }
 
+        // Кнопка для добавления новой станции, если их меньше 6
         if (stations.size < 6) {
             Button(onClick = {
-                stations = stations + ""
+                stations = stations + StationInput() // Добавляем новую станцию
             }) {
                 Text("Добавить станцию")
             }
@@ -149,17 +151,15 @@ fun StationInputScreen(
     }
 }
 
-
 @Composable
 fun StationInputField(
-    index: Int,
-    station: String,
+    stationInput: StationInput,
     stationsNames: List<Pair<String, String>>,
-    onValueChange: (String, Int) -> Unit,
+    onValueChange: (String) -> Unit,
     onSelect: (String, String) -> Unit,
-    onClose: (Int) -> Unit
+    onClose: (String) -> Unit
 ) {
-    var text by remember { mutableStateOf(station) } // Состояние для текущей станции
+    var text by remember { mutableStateOf(stationInput.name) } // Состояние для текущей станции
     var expanded by remember { mutableStateOf(false) }
     var filteredStations by remember { mutableStateOf(stationsNames) }
 
@@ -170,13 +170,13 @@ fun StationInputField(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 BasicTextField(
-                    value = text,
+                    value = stationInput.name,
                     onValueChange = { newText: String ->
                         text = newText
                         filteredStations =
                             stationsNames.filter { it.first.startsWith(newText, ignoreCase = true) }
                         expanded = true
-                        onValueChange(newText, index) // Обновляем состояние в списке
+                        onValueChange(newText) // Обновляем состояние в списке
                     },
                     modifier = Modifier
                         .weight(1f) // Пропорциональное заполнение пространства
@@ -189,7 +189,7 @@ fun StationInputField(
 
                 IconButton(
                     onClick = {
-                        onClose(index) // Удаляем станцию по индексу
+                        onClose(stationInput.id) // Вызываем onClose с уникальным ID
                     },
                     modifier = Modifier.size(48.dp) // Увеличиваем область клика
                 ) {
@@ -205,7 +205,7 @@ fun StationInputField(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 120.dp) // Ограничение высоты списка
+                        .heightIn(max = 300.dp) // Ограничение высоты списка
                 ) {
                     items(filteredStations) { (stationName, lineName) ->
                         Row(
@@ -213,7 +213,7 @@ fun StationInputField(
                                 .fillMaxWidth()
                                 .clickable {
                                     text = stationName
-                                    onValueChange(stationName, index)
+                                    onValueChange(stationName)
                                     onSelect(stationName, lineName)
                                     expanded = false
                                 }
@@ -236,3 +236,9 @@ fun StationInputField(
         }
     }
 }
+
+data class StationInput(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    var name: String = ""
+)
+
