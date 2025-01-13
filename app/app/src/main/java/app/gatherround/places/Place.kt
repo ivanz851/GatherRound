@@ -14,8 +14,8 @@ data class Place(
     val title: String,
     val address: String,
     val coords: Coordinates? = null,
-    @Serializable(with = SubwayDeserializer::class)
-    val subway: List<String> = emptyList(),
+    // @Serializable(with = SubwayDeserializer::class)
+    val subway: String,
 ) {
     @Serializable
     data class Coordinates(
@@ -23,6 +23,7 @@ data class Place(
         val lon: Double?
     )
 
+    /*
     object SubwayDeserializer : KSerializer<List<String>> {
         override val descriptor: SerialDescriptor =
             PrimitiveSerialDescriptor("Subway", PrimitiveKind.STRING)
@@ -36,4 +37,5 @@ data class Place(
             return subwayString.split(",").map { it.trim() }
         }
     }
+     */
 }

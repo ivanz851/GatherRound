@@ -11,8 +11,10 @@ fun findOptimalPlaces(
     metroGraph: MetroGraph,
     selectedStations: Set<Station>,
     placesData: PlacesData,
-): List<Place> {
+): String? {
     val optimalStation = metroGraph.findOptimalVertex(selectedStations).first
+
+    println("optimal station = ${optimalStation!!}")
     return placesData.getPlacesByStation(optimalStation!!)
 }
 
@@ -29,9 +31,14 @@ fun main() {
 
     graph.printAllConnections()
 
+    /*
     val chosenStations = setOf(metroData.getStationByNameAndLineId("Третьяковская", 5),
         metroData.getStationByNameAndLineId("Деловой центр", 13),
         metroData.getStationByNameAndLineId("Царицыно", 2))
+        .filterNotNull().toSet()
+     */
+    val chosenStations = setOf(metroData.getStationByNameAndLineId("Академическая", 5),
+        metroData.getStationByNameAndLineId("Петровско-Разумовская", 7))
         .filterNotNull().toSet()
 
     val (optimalStataion, time) = graph.findOptimalVertex(chosenStations)
@@ -47,7 +54,7 @@ fun main() {
 
     var places = placesData.fetchPlacesInMoscow()
 
-    places = findOptimalPlaces(graph, chosenStations, placesData)
+    places = PlacesData().parsePlaces(findOptimalPlaces(graph, chosenStations, placesData)!!)
 
     if (places.isNotEmpty()) {
         println("Полученные места: ${places.size}\n")
