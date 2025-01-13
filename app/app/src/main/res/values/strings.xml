@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">GatherRound</string>
+    <string name="app_name">Gather Round</string>
+    <string name="title_activity_station_input">StationInputActivity</string>
+    <string name="title_activity_event_list">EventListActivity</string>
 </resources>

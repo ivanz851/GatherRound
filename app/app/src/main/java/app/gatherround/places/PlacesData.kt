@@ -1,17 +1,11 @@
 package app.gatherround.places
 
 import app.gatherround.metro.Location
-import app.gatherround.metro.RUSSIAN
 import app.gatherround.metro.Station
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import java.net.URLEncoder
 
 
 class PlacesData {
@@ -48,7 +42,7 @@ class PlacesData {
         }
     }
 
-    private fun parsePlaces(json: String): List<Place> {
+    fun parsePlaces(json: String): List<Place> {
         return try {
             val response = jsonParser.decodeFromString<PlacesResponse>(json)
             response.results
@@ -68,7 +62,7 @@ class PlacesData {
         }
     }
 
-    fun getPlacesByLocationAndRadius(location: Location, radius: Int): List<Place> {
+    fun getPlacesByLocationAndRadius(location: Location, radius: Int): String? {
         val url = "https://kudago.com/public-api/v1.4/places/" +
                 "?lang=ru" +
                 "&location=msk" +
@@ -76,16 +70,10 @@ class PlacesData {
                 "&lon=${location.lon}" +
                 "&lat=${location.lat}" +
                 "&radius=$radius"
-        val json = performRequest(url)
-
-        return if (json != null) {
-            parsePlaces(json)
-        } else {
-            emptyList()
-        }
+        return performRequest(url)
     }
 
-    fun getPlacesByStation(station: Station): List<Place> {
+    fun getPlacesByStation(station: Station): String? {
         return getPlacesByLocationAndRadius(station.location!!, 1200)
     }
 }
