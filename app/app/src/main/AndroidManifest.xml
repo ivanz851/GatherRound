@@ -22,7 +22,6 @@
         <activity
                 android:name=".StationInputActivity"
                 android:exported="true"
-                android:label="@string/title_activity_station_input"
                 android:theme="@style/Theme.GatherRound">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
