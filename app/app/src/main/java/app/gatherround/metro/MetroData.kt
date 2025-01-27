@@ -75,7 +75,7 @@ data class MetroData(
         val result = mutableMapOf<Int, Station>()
 
         for (station in stations) {
-            result[station.id!!] = station
+            result[station.id] = station
         }
 
         return result
@@ -137,5 +137,4 @@ data class MetroData(
             println("Станция: ${station.name[RUSSIAN]!!}, Линия: ${station.lineId}, Label ID: ${station.id}")
         }
     }
-
 }
