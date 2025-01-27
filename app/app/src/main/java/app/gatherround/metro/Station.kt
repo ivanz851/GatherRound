@@ -15,7 +15,7 @@ const val RUSSIAN = "ru"
 
 @Serializable
 data class Station(
-    var id: Int? = null,
+    var id: Int,
     val name: Map<String, String>,
     val lineId: Int,
     val location: Location?,

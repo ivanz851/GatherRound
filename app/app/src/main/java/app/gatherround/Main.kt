@@ -21,13 +21,15 @@ fun findOptimalPlaces(
 fun main() {
     val metroData = MetroData().loadMetroDataFromFile()
 
-
-    println("MetroData: ${metroData.stations.size}")
-    metroData.stations.forEach { station ->
-        println("${station.name[RUSSIAN]}, ${station.lineId}")
-    }
-
     val graph = MetroGraph(metroData)
+
+    graph.processLinesTraversal()
+
+    return
+
+
+
+
 
     graph.printAllConnections()
 
