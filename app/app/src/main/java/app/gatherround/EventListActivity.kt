@@ -3,14 +3,18 @@ package app.gatherround
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import app.gatherround.places.Place
 import app.gatherround.places.PlacesData
@@ -26,14 +30,19 @@ class EventListActivity : ComponentActivity() {
         setContent {
             EventListScreen(
                 places = places,
-                onBackClick = { finish() }
+                onBackClick = {
+                    finish()
+                              },
+                onItemClick = {
+                    /* TODO - дописать обработку нажатия */
+                }
             )
         }
     }
 }
 
 @Composable
-fun EventListScreen(places: List<Place>, onBackClick: () -> Unit) {
+fun EventListScreen(places: List<Place>, onBackClick: () -> Unit, onItemClick: (Place) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -41,11 +50,15 @@ fun EventListScreen(places: List<Place>, onBackClick: () -> Unit) {
     ) {
         Box(
             modifier = Modifier
-                .weight(1f) // Заполнить все доступное пространство
+                .weight(1f)
         ) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            ) {
                 items(places) { place ->
-                    EventItem(place = place)
+                    EventItem(place = place, onClick = { onItemClick(place) })
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
@@ -63,40 +76,39 @@ fun EventListScreen(places: List<Place>, onBackClick: () -> Unit) {
 }
 
 @Composable
-fun EventItem(place: Place) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text("Название: ${place.title}")
-        Text("Адрес: ${place.address}")
-
-        /*
-        place.coords?.let {
-            Text("Координаты: ${it.lat}, ${it.lon}")
-        }
-        Text("Линии метро: ${place.subway}")
-         */
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewEventListScreen() {
-    EventListScreen(
-        places = listOf(
-            Place(
-                id = 1,
-                title = "Place 1",
-                address = "Address 1",
-                coords = Place.Coordinates(40.7128, -74.0060),
-                subway = "Line 1, Line 2"
-            ),
-            Place(
-                id = 2,
-                title = "Place 2",
-                address = "Address 2",
-                coords = Place.Coordinates(48.8566, 2.3522),
-                subway = "Line A, Line B"
+fun EventItem(place: Place, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(4.dp),
+        elevation = CardDefaults.cardElevation(6.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Place,
+                contentDescription = "Место",
+                tint = Color.Blue,
+                modifier = Modifier.size(32.dp)
             )
-        ),
-        onBackClick = {}
-    )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text(
+                    text = place.title,
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    text = place.address,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+            }
+        }
+    }
 }
