@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,8 +19,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DeleteForever
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
 import app.gatherround.places.PlacesData
@@ -96,7 +99,7 @@ fun StationInputScreen(
                         selectedStations.value.removeIf { it.first == stationInput.name }
                     }
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(16.dp))
             }
         }
 
@@ -108,8 +111,6 @@ fun StationInputScreen(
                 Text("Добавить станцию")
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
@@ -124,7 +125,6 @@ fun StationInputScreen(
 
                         val placesData = PlacesData()
 
-                        // Фоновая обработка поиска мероприятий
                         val eventsJson = withContext(Dispatchers.IO) {
                             findOptimalPlaces(graph, chosenStations, placesData)
                         }!!
@@ -143,11 +143,13 @@ fun StationInputScreen(
             Text("Найти мероприятия", color = Color.White)
         }
 
+        /*
         Spacer(modifier = Modifier.height(16.dp))
         Text("Выбранные станции:")
         selectedStations.value.forEach { (station, line) ->
             Text("- $station ($line)")
         }
+        */
     }
 }
 
@@ -159,77 +161,85 @@ fun StationInputField(
     onSelect: (String, String) -> Unit,
     onClose: (String) -> Unit
 ) {
-    var text by remember { mutableStateOf(stationInput.name) } // Состояние для текущей станции
+    var text by remember { mutableStateOf(stationInput.name) }
     var expanded by remember { mutableStateOf(false) }
     var filteredStations by remember { mutableStateOf(stationsNames) }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BasicTextField(
-                    value = stationInput.name,
-                    onValueChange = { newText: String ->
-                        text = newText
-                        filteredStations =
-                            stationsNames.filter { it.first.startsWith(newText, ignoreCase = true) }
-                        expanded = true
-                        onValueChange(newText) // Обновляем состояние в списке
-                    },
-                    modifier = Modifier
-                        .weight(1f) // Пропорциональное заполнение пространства
-                        .padding(8.dp)
-                        .border(1.dp, Color.Gray),
-                    textStyle = TextStyle(color = Color.Black)
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                IconButton(
-                    onClick = {
-                        onClose(stationInput.id) // Вызываем onClose с уникальным ID
-                    },
-                    modifier = Modifier.size(48.dp) // Увеличиваем область клика
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = "Удалить станцию",
-                        tint = Color.Black,
-                    )
-                }
-            }
-
-            if (expanded && filteredStations.isNotEmpty()) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 300.dp) // Ограничение высоты списка
-                ) {
-                    items(filteredStations) { (stationName, lineName) ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    text = stationName
-                                    onValueChange(stationName)
-                                    onSelect(stationName, lineName)
-                                    expanded = false
-                                }
-                                .padding(8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = stationName,
-                                modifier = Modifier.weight(1f),
-                                color = Color.Black
-                            )
-                            Text(
-                                text = lineName,
-                                color = Color.Gray
-                            )
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { newText: String ->
+                    text = newText
+                    filteredStations = stationsNames.filter {
+                        it.first.startsWith(newText, ignoreCase = true)
+                    }
+                    expanded = filteredStations.isNotEmpty()
+                    onValueChange(newText)
+                },
+                modifier = Modifier.weight(1f),
+                label = { Text("Введите станцию") },
+                singleLine = true,
+                trailingIcon = {
+                    Row {
+                        if (text.isNotEmpty()) {
+                            IconButton(onClick = {
+                                text = ""
+                                onValueChange("")
+                                expanded = false
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = "Очистить",
+                                    tint = Color.Gray
+                                )
+                            }
                         }
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            IconButton(
+                onClick = { onClose(stationInput.id) },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.DeleteForever,
+                    contentDescription = "Удалить поле",
+                    tint = Color.Red
+                )
+            }
+        }
+
+        AnimatedVisibility(visible = expanded) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 250.dp),
+                shape = RoundedCornerShape(8.dp),
+                elevation = CardDefaults.cardElevation(4.dp)
+            ) {
+                LazyColumn {
+                    items(filteredStations) { (stationName, lineName) ->
+                        DropdownMenuItem(
+                            text = {
+                                Column {
+                                    Text(text = stationName, style = MaterialTheme.typography.bodyLarge)
+                                    Text(text = lineName, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                                }
+                            },
+                            onClick = {
+                                text = stationName
+                                onValueChange(stationName)
+                                onSelect(stationName, lineName)
+                                expanded = false
+                            }
+                        )
                     }
                 }
             }
