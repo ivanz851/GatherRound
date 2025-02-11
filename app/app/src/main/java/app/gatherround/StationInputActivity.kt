@@ -65,7 +65,7 @@ fun StationInputScreen(
     metroData: MetroData,
     graph: MetroGraph
 ) {
-    var stations by remember { mutableStateOf(listOf(StationInput())) }
+    val stations = remember { mutableStateListOf(StationInput()) }
     val selectedStations = remember { mutableStateOf(mutableSetOf<Pair<String, String>>()) }
 
     val context = LocalContext.current
@@ -86,16 +86,16 @@ fun StationInputScreen(
                     stationInput = stationInput,
                     stationsNames = stationsNames,
                     onValueChange = { newStation ->
-                        stations = stations.map {
-                            if (it.id == stationInput.id) it.copy(name = newStation) else it
+                        val index = stations.indexOfFirst { it.id == stationInput.id }
+                        if (index != -1) {
+                            stations[index] = stations[index].copy(name = newStation)
                         }
                     },
                     onSelect = { station, line ->
                         selectedStations.value.add(station to line)
                     },
                     onClose = { stationId ->
-                        // Удаляем станцию по уникальному ID
-                        stations = stations.filter { it.id != stationId }
+                        stations.removeIf { it.id == stationId }
                         selectedStations.value.removeIf { it.first == stationInput.name }
                     }
                 )
@@ -106,7 +106,7 @@ fun StationInputScreen(
         // Кнопка для добавления новой станции, если их меньше 6
         if (stations.size < 6) {
             Button(onClick = {
-                stations = stations + StationInput() // Добавляем новую станцию
+                stations.add(StationInput())
             }) {
                 Text("Добавить станцию")
             }
@@ -143,13 +143,13 @@ fun StationInputScreen(
             Text("Найти мероприятия", color = Color.White)
         }
 
-        /*
+
         Spacer(modifier = Modifier.height(16.dp))
         Text("Выбранные станции:")
         selectedStations.value.forEach { (station, line) ->
             Text("- $station ($line)")
         }
-        */
+
     }
 }
 
@@ -171,7 +171,7 @@ fun StationInputField(
             modifier = Modifier.fillMaxWidth()
         ) {
             OutlinedTextField(
-                value = text,
+                value = stationInput.name,
                 onValueChange = { newText: String ->
                     text = newText
                     filteredStations = stationsNames.filter {
