@@ -132,7 +132,9 @@ fun StationInputScreen(
             onClick = {
                 CoroutineScope(Dispatchers.Main).launch {
                     try {
-                        val chosenStations: Set<Station> = stations.toSet()
+                        val chosenStations: Set<Station> = stations
+                            .filter { it.id != -1 } // Removing empty input fields
+                            .toSet()
                         val placesData = PlacesData()
 
                         val eventsJson = withContext(Dispatchers.IO) {
@@ -153,14 +155,17 @@ fun StationInputScreen(
             Text("Найти мероприятия", color = Color.White)
         }
 
+        // Debug output:
         /*
-        Debug output:
         Spacer(modifier = Modifier.height(16.dp))
         Text("Выбранные станции:")
-        stations.forEach { station ->
+        val chosenStations: Set<Station> = stations
+            .filter { it.id != -1 } // Removing empty input fields
+            .toSet()
+        chosenStations.forEach { station ->
             Text("- ${station.id} ${station.name[RUSSIAN]!!}")
         }
-        */
+         */
     }
 }
 
