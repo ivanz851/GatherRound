@@ -5,17 +5,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,6 +21,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DeleteForever
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
+import app.gatherround.metro.RUSSIAN
+import app.gatherround.metro.Station
 import app.gatherround.places.PlacesData
 import kotlinx.coroutines.*
 
@@ -65,8 +63,8 @@ fun StationInputScreen(
     metroData: MetroData,
     graph: MetroGraph
 ) {
-    var stations by remember { mutableStateOf(listOf(StationInput())) }
-    val selectedStations = remember { mutableStateOf(mutableSetOf<Pair<String, String>>()) }
+    val stations = remember { mutableStateListOf<Station>() }
+    // val selectedStations = remember { mutableStateOf(mutableSetOf<Station>()) }
 
     val context = LocalContext.current
 
@@ -77,36 +75,54 @@ fun StationInputScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        stations.forEach { stationInput ->
+        stations.forEachIndexed { stationIndex, station ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 StationInputField(
-                    stationInput = stationInput,
+                    metroData = metroData,
+                    station = station,
                     stationsNames = stationsNames,
                     onValueChange = { newStation ->
-                        stations = stations.map {
-                            if (it.id == stationInput.id) it.copy(name = newStation) else it
-                        }
+                        stations.removeAt(stationIndex)
+                        stations.add(stationIndex, newStation)
                     },
-                    onSelect = { station, line ->
-                        selectedStations.value.add(station to line)
-                    },
-                    onClose = { stationId ->
-                        // Удаляем станцию по уникальному ID
-                        stations = stations.filter { it.id != stationId }
-                        selectedStations.value.removeIf { it.first == stationInput.name }
+                    onClose = {
+                        stations.removeAt(stationIndex)
                     }
                 )
                 Spacer(modifier = Modifier.width(16.dp))
             }
         }
 
-        // Кнопка для добавления новой станции, если их меньше 6
         if (stations.size < 6) {
             Button(onClick = {
-                stations = stations + StationInput() // Добавляем новую станцию
+                val newStation = Station(
+                    id = -1,
+                    name = mapOf(RUSSIAN to ""),
+                    lineId = -1,
+                    location = null,
+                    exits = emptyList(),
+                    scheduleTrains = emptyMap(),
+                    workTime = emptyList(),
+                    services = emptyList(),
+                    enterTime = null,
+                    exitTime = null,
+                    ordering = 0,
+                    mcd = false,
+                    outside = false,
+                    mcc = false,
+                    history = null,
+                    audios = emptyList(),
+                    accessibilityImages = emptyList(),
+                    buildingImages = emptyList(),
+                    stationSvg = null,
+                    textSvg = null,
+                    tapSvg = null
+                )
+
+                stations.add(newStation)
             }) {
                 Text("Добавить станцию")
             }
@@ -116,13 +132,9 @@ fun StationInputScreen(
             onClick = {
                 CoroutineScope(Dispatchers.Main).launch {
                     try {
-                        val chosenStations = selectedStations.value.map { (station, line) ->
-                            metroData.getStationByNameAndLineId(
-                                station,
-                                metroData.getLineIndexByName(line)!!.id
-                            )!!
-                        }.toSet()
-
+                        val chosenStations: Set<Station> = stations
+                            .filter { it.id != -1 } // Removing empty input fields
+                            .toSet()
                         val placesData = PlacesData()
 
                         val eventsJson = withContext(Dispatchers.IO) {
@@ -143,25 +155,29 @@ fun StationInputScreen(
             Text("Найти мероприятия", color = Color.White)
         }
 
+        // Debug output:
         /*
         Spacer(modifier = Modifier.height(16.dp))
         Text("Выбранные станции:")
-        selectedStations.value.forEach { (station, line) ->
-            Text("- $station ($line)")
+        val chosenStations: Set<Station> = stations
+            .filter { it.id != -1 } // Removing empty input fields
+            .toSet()
+        chosenStations.forEach { station ->
+            Text("- ${station.id} ${station.name[RUSSIAN]!!}")
         }
-        */
+         */
     }
 }
 
 @Composable
 fun StationInputField(
-    stationInput: StationInput,
+    metroData: MetroData,
+    station: Station,
     stationsNames: List<Pair<String, String>>,
-    onValueChange: (String) -> Unit,
-    onSelect: (String, String) -> Unit,
-    onClose: (String) -> Unit
+    onValueChange: (Station) -> Unit,
+    onClose: (Station) -> Unit
 ) {
-    var text by remember { mutableStateOf(stationInput.name) }
+    var curStationName by remember(station) { mutableStateOf(station.name[RUSSIAN]!!) }
     var expanded by remember { mutableStateOf(false) }
     var filteredStations by remember { mutableStateOf(stationsNames) }
 
@@ -171,24 +187,24 @@ fun StationInputField(
             modifier = Modifier.fillMaxWidth()
         ) {
             OutlinedTextField(
-                value = text,
-                onValueChange = { newText: String ->
-                    text = newText
+                value = curStationName,
+                onValueChange = { newStationName: String ->
+                    curStationName = newStationName
                     filteredStations = stationsNames.filter {
-                        it.first.startsWith(newText, ignoreCase = true)
+                        it.first.startsWith(newStationName, ignoreCase = true)
                     }
                     expanded = filteredStations.isNotEmpty()
-                    onValueChange(newText)
                 },
                 modifier = Modifier.weight(1f),
                 label = { Text("Введите станцию") },
                 singleLine = true,
                 trailingIcon = {
                     Row {
-                        if (text.isNotEmpty()) {
+                        if (curStationName.isNotEmpty()) {
                             IconButton(onClick = {
-                                text = ""
-                                onValueChange("")
+                                curStationName = ""
+                                onValueChange(station.copy(name = station.name.toMutableMap().apply { put(RUSSIAN, "") },
+                                                           id = -1))
                                 expanded = false
                             }) {
                                 Icon(
@@ -205,7 +221,7 @@ fun StationInputField(
             Spacer(modifier = Modifier.width(8.dp))
 
             IconButton(
-                onClick = { onClose(stationInput.id) },
+                onClick = { onClose(station) },
                 modifier = Modifier.size(48.dp)
             ) {
                 Icon(
@@ -225,19 +241,26 @@ fun StationInputField(
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
                 LazyColumn {
-                    items(filteredStations) { (stationName, lineName) ->
+                    items(filteredStations) { (newStationName, newLineName) ->
                         DropdownMenuItem(
                             text = {
                                 Column {
-                                    Text(text = stationName, style = MaterialTheme.typography.bodyLarge)
-                                    Text(text = lineName, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                                    Text(text = newStationName,
+                                        style = MaterialTheme.typography.bodyLarge)
+                                    Text(text = newLineName,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray)
                                 }
                             },
-                            onClick = {
-                                text = stationName
-                                onValueChange(stationName)
-                                onSelect(stationName, lineName)
+                            onClick = onClick@{
+                                val newLineId =
+                                    metroData.getLineIndexByName(newLineName)?.id ?: return@onClick
+                                val selectedStation =
+                                    metroData.getStationByNameAndLineId(newStationName, newLineId) ?: return@onClick
+
+                                curStationName = newStationName
                                 expanded = false
+                                onValueChange(selectedStation)
                             }
                         )
                     }
@@ -246,9 +269,3 @@ fun StationInputField(
         }
     }
 }
-
-data class StationInput(
-    val id: String = java.util.UUID.randomUUID().toString(),
-    var name: String = ""
-)
-
