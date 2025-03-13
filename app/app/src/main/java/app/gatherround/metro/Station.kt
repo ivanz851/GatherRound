@@ -1,41 +1,32 @@
 package app.gatherround.metro
 
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
 
 const val RUSSIAN = "ru"
 
 @Serializable
 data class Station(
-    var id: Int,
-    val name: Map<String, String>,
-    val lineId: Int,
-    val location: Location?,
-    val exits: List<Exit>,
-    val scheduleTrains: Map<String, List<TrainSchedule>>,
-    val workTime: List<WorkTime>,
-    val services: List<String>,
-    val enterTime: Int?,
-    val exitTime: Int?,
-    val ordering: Int,
-    val mcd: Boolean?,
-    val outside: Boolean?,
-    val mcc: Boolean?,
-    val history: String?,
-    val audios: List<String>,
-    val accessibilityImages: List<String>,
-    val buildingImages: List<String>,
-    val stationSvg: SvgData?,
-    val textSvg: SvgText?,
-    val tapSvg: SvgTap?
+    var id: Int = 0,
+    val name: Map<String, String> = emptyMap(),
+    val lineId: Int = 0,
+    val location: Location? = null,
+    val exits: List<Exit> = emptyList(),
+    val scheduleTrains: Map<String, List<TrainSchedule>> = emptyMap(),
+    val workTime: List<WorkTime> = emptyList(),
+    val services: List<String> = emptyList(),
+    val enterTime: Int? = null,
+    val exitTime: Int? = null,
+    val ordering: Int = 0,
+    val mcd: Boolean? = null,
+    val outside: Boolean? = null,
+    val mcc: Boolean? = null,
+    val history: String? = null,
+    val audios: List<String> = emptyList(),
+    val accessibilityImages: List<String> = emptyList(),
+    val buildingImages: List<String> = emptyList(),
+    val stationSvg: SvgData? = null,
+    val textSvg: SvgText? = null,
+    val tapSvg: SvgTap? = null,
 ) : Comparable<Station> {
     override fun compareTo(other: Station): Int {
         val thisNameEn = this.name[RUSSIAN]!!

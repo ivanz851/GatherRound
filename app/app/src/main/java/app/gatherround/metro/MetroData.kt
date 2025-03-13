@@ -124,6 +124,10 @@ data class MetroData(
         return lineIndexMap[lineName]
     }
 
+    fun getLineIndexById(lineId: Int): Line? {
+        return lineNameMap[lineId]
+    }
+
 
     fun printStationNameIdMap() {
         stationNameIdMap.forEach { (key, value) ->
