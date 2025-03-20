@@ -13,8 +13,8 @@ android {
         applicationId = "app.gatherround"
         minSdk = 24
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.2"
+        versionCode = 4
+        versionName = "1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -68,6 +68,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
 
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
