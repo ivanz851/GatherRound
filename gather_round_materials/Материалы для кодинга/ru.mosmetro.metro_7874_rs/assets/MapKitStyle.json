@@ -1,0 +1,50 @@
+[
+  {
+    "tags": {
+      "all": ["vegetation", "park"]
+    },
+    "types": ["polygon"],
+    "stylers": {
+      "color": "#b1ddb8"
+    }
+  },
+  {
+    "tags": {
+      "all": ["building"]
+    },
+    "types": ["polygon"],
+    "stylers": {
+      "color": "#d8dbe0"
+    }
+  },
+  {
+    "tags": {
+      "all": ["land"]
+    },
+    "types": ["polygon"],
+    "stylers": {
+      "hue": "#FF0000",
+      "saturation": 0,
+      "lightness": 0,
+      "color": "#FF0000",
+      "opacity": 0,
+      "scale": 2.0
+    }
+  },
+  {
+    "tags": {
+      "any": ["road_6", "road_7"]
+    },
+    "stylers": {
+      "color": "#fefeff"
+    }
+  },
+  {
+    "tags": {
+      "any": ["road_1", "road_2", "road_3", "road_4", "road_5"]
+    },
+    "stylers": {
+      "color": "#8ea9d3"
+    }
+  }
+]

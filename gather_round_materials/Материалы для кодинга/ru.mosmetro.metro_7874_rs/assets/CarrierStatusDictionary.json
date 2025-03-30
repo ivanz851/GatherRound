@@ -1,0 +1,27 @@
+{
+  "ru": {
+    "hasDeferredActions": "Имеются незаписанные пополнения",
+    "cardTemporaryBlocked": "Карта временно заблокирована",
+    "cardReadyToTransfer": "Карта готова к переносу",
+    "needActivatePayment": "Необходимо активировать пополнение",
+    "cardAnnulated": "Карта аннулирована",
+    "cardExpired": "Истек срок действия карты",
+    "cardWaitingLink": "Ожидается привязка %s",
+    "cardWaitingWrite": "Запишите пополнение на %s",
+    "cardLinking": "Карта привязывается",
+    "timeToLinkExpired": "Время для привязки истекло",
+    "sbpStateActive": "Активна",
+    "sbpStateInProgress": "Не оформлена",
+    "sbpStateCanceled": "Отключена",
+    "sbpStatusInProgress": "Статус подписки уточняется",
+    "sbpStatusFailed": "Не удалось оформить подписку",
+    "sbpStatusCanceled": "Вы отключили подписку СБП",
+    "sbpTitle": "Подписка CБП",
+    "biometryTitle": "Биометрическая оплата",
+    "carrierLoadingFailureMessage": "При загрузке карт произошла ошибка",
+    "cardHasUnpaidTrips": "Имеются неоплаченные поездки",
+    "blocked": "Заблокирована",
+    "ticketAboutToExpire": "Срок действия билета скоро закончится",
+    "deviceChanged": "Осуществлен вход с нового устройства"
+  }
+}

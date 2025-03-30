@@ -1,0 +1,21 @@
+{
+  "ru": {
+    "fee": "Задолженность",
+    "trip": "Поездка",
+    "bankCard": "Банковская карта",
+    "passage": "Проход",
+    "payStatusWaiting": "В процессе оплаты",
+    "payStatusNotPaid": "Поездка не оплачена",
+    "payStatusSuccess": "Успешно",
+    "payStatusDefined": "Определяется",
+    "payStatusProcessed": "Обрабатывается",
+    "payStatusNoPaymentRequired": "Оплата не требуется",
+    "payStatusPaid": "Оплата подтверждена",
+    "payStatusAwaitingPayment": "Ожидает оплаты",
+    "payStatusPaymentCanceled": "Платеж отменен",
+    "payStatusPaymentRefunded": "Оплата возвращена",
+    "payStatusPaymentError": "Ошибка в процессе оплаты",
+    "payStatusUnknownError": "Неизвестная ошибка",
+    "failureTicketWrite": "Срыв записи билета"
+  }
+}
