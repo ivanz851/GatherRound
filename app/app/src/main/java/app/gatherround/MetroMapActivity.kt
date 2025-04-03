@@ -18,10 +18,8 @@ class MetroMapActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Включим WebView debugging, чтобы смотреть логи через chrome://inspect
         WebView.setWebContentsDebuggingEnabled(true)
 
-        // Запускаем Compose
         setContent {
             WebMapScreen()
         }
@@ -49,12 +47,12 @@ fun WebMapScreen() {
                 webViewClient = WebViewClient()
                 webChromeClient = WebChromeClient()
 
-                val html = context.assets.open("map/index.html")  // путь в assets
+                val html = context.assets.open("map/index.html")
                     .bufferedReader()
                     .use { it.readText() }
 
                 loadDataWithBaseURL(
-                    "file:///android_asset/map/", // базовый путь для всего (JS, href и т.д.)
+                    "file:///android_asset/map/",
                     html,
                     "text/html",
                     "utf-8",
