@@ -27,8 +27,9 @@
             </intent-filter>
 
         </activity>
+
         <activity
-                android:name=".CombinedMetroActivity"
+                android:name=".StationSelectionActivity"
                 android:exported="true"
                 android:theme="@style/Theme.GatherRound" />
         <activity
