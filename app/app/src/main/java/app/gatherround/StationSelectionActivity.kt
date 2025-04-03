@@ -2,6 +2,7 @@ package app.gatherround
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -49,6 +50,8 @@ class MapInterface(
 
     @JavascriptInterface
     fun onStationClick(stationId: String) {
+        Log.d("WebView", "Станция выбрана: $stationId")
+
         onStationClicked(stationId)
     }
 }
@@ -194,25 +197,16 @@ fun WebMapBlock(
                 addJavascriptInterface(
                     MapInterface { stationId ->
                         // MapInterface вызовет этот код (уже на UI-потоке)
+                        Log.d("WebView", "onStationClicked вызван с ID = $stationId")
+
                         post {
                             onStationClicked(stationId)
                         }
                     },
-                    "androidInterface"  // это имя объекта, под которым JS будет вызывать методы
+                    "Android"  // это имя объекта, под которым JS будет вызывать методы
                 )
+                loadUrl("file:///android_asset/map/index.html")
 
-                // Загружаем локальный HTML
-                val html = context.assets.open("map/index.html")
-                    .bufferedReader()
-                    .use { it.readText() }
-
-                loadDataWithBaseURL(
-                    "file:///android_asset/map/",
-                    html,
-                    "text/html",
-                    "utf-8",
-                    null
-                )
             }
         },
         modifier = Modifier.fillMaxSize()
