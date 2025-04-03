@@ -11,6 +11,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -76,19 +79,26 @@ fun StationSelectionScreen(
     }
 
 
-    Column {
+    Column(modifier = Modifier.fillMaxSize()) {
         // Вставляем блок с TextField’ами
         StationInputBlock(
             stations = stations,
             stationsNames = stationsNames,
             metroData = metroData,
-            graph = graph
+            graph = graph,
+            modifier = Modifier
+                .weight(0.4f)
         )
 
         // Добавляем карту
         // Можно сделать разделитель (Divider) или Spacer, если нужно
         Divider()
-        WebMapBlock(onStationClicked = onStationClicked)
+        WebMapBlock(
+            onStationClicked = onStationClicked,
+            modifier = Modifier
+                .weight(1f) // 👈 растягивается на всё оставшееся
+                .fillMaxWidth()
+        )
     }
 }
 
@@ -98,12 +108,12 @@ fun StationInputBlock(
     stations: MutableList<app.gatherround.metro.Station>,
     stationsNames: List<Pair<String, String>>,
     metroData: MetroData,
-    graph: MetroGraph
+    graph: MetroGraph,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
-    Column(
-    ) {
+    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         stations.forEachIndexed { stationIndex, station ->
             StationInputField(
                 metroData = metroData,
@@ -176,7 +186,8 @@ fun StationInputBlock(
 
 @Composable
 fun WebMapBlock(
-    onStationClicked: (String) -> Unit
+    onStationClicked: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     AndroidView(
         factory = { context ->
@@ -192,7 +203,12 @@ fun WebMapBlock(
                 settings.loadWithOverviewMode = true
 
                 webViewClient = WebViewClient()
-                webChromeClient = WebChromeClient()
+                webChromeClient = object : WebChromeClient() {
+                    override fun onConsoleMessage(consoleMessage: android.webkit.ConsoleMessage): Boolean {
+                        Log.d("WebViewConsole", consoleMessage.message())
+                        return true
+                    }
+                }
 
                 addJavascriptInterface(
                     MapInterface { stationId ->
@@ -209,6 +225,6 @@ fun WebMapBlock(
 
             }
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier
     )
 }
