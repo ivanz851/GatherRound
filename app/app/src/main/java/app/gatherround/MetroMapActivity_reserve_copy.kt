@@ -1,4 +1,4 @@
-package app.gatherround
+/* package app.gatherround
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +9,7 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
-class MetroMapActivity_reserve_copy : AppCompatActivity() {
+class MetroMapActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
     private val chosenStations = mutableListOf<String>()
@@ -42,13 +42,13 @@ class MetroMapActivity_reserve_copy : AppCompatActivity() {
                 if (!chosenStations.contains(stationId)) {
                     chosenStations.add(stationId)
                     Toast.makeText(
-                        this@MetroMapActivity_reserve_copy,
+                        this@MetroMapActivity,
                         "Добавлена станция: $stationId",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
                     Toast.makeText(
-                        this@MetroMapActivity_reserve_copy,
+                        this@MetroMapActivity,
                         "Станция уже выбрана",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -67,3 +67,4 @@ class MetroMapActivity_reserve_copy : AppCompatActivity() {
         startActivity(intent)
     }
 }
+*/

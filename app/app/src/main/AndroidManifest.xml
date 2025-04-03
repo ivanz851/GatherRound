@@ -17,19 +17,20 @@
             android:hardwareAccelerated="true"
             tools:targetApi="31">
         <activity
-                android:name=".MetroMapActivity_reserve_copy"
-                android:exported="true" />
-        <activity
                 android:name=".MetroMapActivity"
                 android:exported="true"
                 android:theme="@style/Theme.GatherRound">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
         </activity>
+        <activity
+                android:name=".CombinedMetroActivity"
+                android:exported="true"
+                android:theme="@style/Theme.GatherRound" />
         <activity
                 android:name=".EventListActivity"
                 android:exported="true"

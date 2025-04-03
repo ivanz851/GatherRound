@@ -1,36 +1,29 @@
 package app.gatherround.ui
 
-import android.webkit.WebChromeClient
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import android.webkit.ConsoleMessage
+import android.webkit.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 
 @Composable
-fun MetroMapScreen() {
-    val webViewRef = remember { mutableStateOf<WebView?>(null) }
+fun MetroMapScreenSimple() {
+    val context = LocalContext.current
 
     Column(modifier = Modifier.fillMaxSize()) {
         AndroidView(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(), // Используем всю высоту
+                .fillMaxHeight(), // Карта на весь экран
             factory = { ctx ->
                 WebView(ctx).apply {
                     settings.javaScriptEnabled = true
-                    settings.domStorageEnabled = true
                     settings.allowFileAccess = true
+                    settings.domStorageEnabled = true
 
-                    webViewClient = WebViewClient()
-
+                    // Выводим консоль браузера в Logcat (полезно для отладки)
                     webChromeClient = object : WebChromeClient() {
                         override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
                             android.util.Log.d(
@@ -41,8 +34,19 @@ fun MetroMapScreen() {
                         }
                     }
 
+                    // Обычный WebViewClient (важен, иначе некоторые загрузки могут не работать)
+                    webViewClient = WebViewClient()
+
+                    // Добавляем интерфейс (если нужен в будущем)
+                    addJavascriptInterface(object {
+                        @JavascriptInterface
+                        fun onStationClick(stationId: String) {
+                            android.util.Log.d("MetroMapScreen", "Clicked: $stationId")
+                        }
+                    }, "Android")
+
+                    // Загружаем карту из assets
                     loadUrl("file:///android_asset/map/index.html")
-                    webViewRef.value = this
                 }
             }
         )

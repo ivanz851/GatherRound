@@ -1,69 +1,67 @@
 package app.gatherround
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 
-class MetroMapActivity: AppCompatActivity() {
-
-    private lateinit var webView: WebView
-    private val chosenStations = mutableListOf<String>()
+class MetroMapActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Включим WebView debugging, чтобы смотреть логи через chrome://inspect
         WebView.setWebContentsDebuggingEnabled(true)
 
-        webView = WebView(this)
-        setContentView(webView)
-
-        webView.settings.javaScriptEnabled = true
-        webView.settings.allowFileAccess = true
-        webView.settings.domStorageEnabled = true
-
-        webView.webViewClient = WebViewClient()
-
-        webView.addJavascriptInterface(JSBridge(), "Android")
-
-        webView.loadUrl("file:///android_asset/map/index.html")
-    }
-
-    inner class JSBridge {
-        @JavascriptInterface
-        fun onStationClick(stationId: String) {
-            Log.d("MetroMapActivity", "Станция нажата: $stationId")
-
-            runOnUiThread {
-                if (!chosenStations.contains(stationId)) {
-                    chosenStations.add(stationId)
-                    Toast.makeText(
-                        this@MetroMapActivity,
-                        "Добавлена станция: $stationId",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    Toast.makeText(
-                        this@MetroMapActivity,
-                        "Станция уже выбрана",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                if (chosenStations.size >= 2) {
-                    goToInputScreen()
-                }
-            }
+        // Запускаем Compose
+        setContent {
+            WebMapScreen()
         }
     }
+}
 
-    private fun goToInputScreen() {
-        val intent = Intent(this, StationInputActivity::class.java)
-        intent.putStringArrayListExtra("selected_station_ids", ArrayList(chosenStations))
-        startActivity(intent)
-    }
+@Composable
+fun WebMapScreen() {
+    AndroidView(
+        factory = { context ->
+            WebView(context).apply {
+                settings.javaScriptEnabled = true
+                settings.domStorageEnabled = true
+                settings.allowFileAccess = true
+                settings.allowUniversalAccessFromFileURLs = true
+
+                settings.setSupportZoom(false) // отключи zoomControls WebView
+                settings.builtInZoomControls = false
+                settings.displayZoomControls = false
+
+                settings.useWideViewPort = true
+                settings.loadWithOverviewMode = true
+
+
+                webViewClient = WebViewClient()
+                webChromeClient = WebChromeClient()
+
+                val html = context.assets.open("map/index.html")  // путь в assets
+                    .bufferedReader()
+                    .use { it.readText() }
+
+                loadDataWithBaseURL(
+                    "file:///android_asset/map/", // базовый путь для всего (JS, href и т.д.)
+                    html,
+                    "text/html",
+                    "utf-8",
+                    null
+                )
+            }
+        },
+        modifier = Modifier.fillMaxSize()
+    )
 }

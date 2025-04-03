@@ -1,6 +1,6 @@
 [versions]
 agp = "8.3.2"
-junitJupiter = "5.8.1"
+junitJupiter = "5.11.3"
 kotlin = "1.9.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -11,10 +11,10 @@ kotlinxSerializationJson = "1.6.0"
 material = "1.12.0"
 okhttp = "4.10.0"
 lifecycleRuntimeKtx = "2.8.7"
-activityCompose = "1.9.3"
-composeBom = "2024.12.01"
-activity = "1.8.0"
-constraintlayout = "2.1.4"
+activityCompose = "1.10.1"
+composeBom = "2025.03.01"
+activity = "1.10.1"
+constraintlayout = "2.2.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -36,7 +36,7 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-material-icons = { group = "androidx.compose.material", name = "material-icons-extended", version = "1.7.6" }
+androidx-material-icons = { group = "androidx.compose.material", name = "material-icons-extended", version = "1.7.8" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
