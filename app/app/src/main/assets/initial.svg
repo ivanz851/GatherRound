@@ -7,7 +7,7 @@
             viewBox="0 0 2850 3449"
     >
         <g>
-            <image xmlns="http://www.w3.org/2000/svg" id="add_pole" overflow="visible" width="2850" height="3449"
+            <image xmlns="http://www.w3.org/2000/svg" id="add_pole" overflow="visible" width="2850" height="3449" style="pointer-events: none;"
                    href="https://static.mosmetro.tech/schema/20.png" transform="matrix(1 0 0 1 0 0)"/>
             <g id="add_vse">
                 <g id="add_river">
