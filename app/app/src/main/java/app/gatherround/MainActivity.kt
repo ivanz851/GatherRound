@@ -18,7 +18,6 @@ import android.webkit.WebViewClient
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import app.gatherround.R
 import com.sam43.svginteractiondemo.FileDownloaderVM
 import app.gatherround.databinding.ActivityMainBinding

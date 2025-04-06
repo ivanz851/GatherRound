@@ -64,7 +64,6 @@ function selectStation(stationId) {
 
   const caption = document.getElementById("caption-" + stationId.split("-")[1]);
 
-  // Сохраняем оригинальный stroke при первом выделении
   if (!circle.hasAttribute("data-original-stroke")) {
     const origStroke = circle.getAttribute("stroke") || "";
     circle.setAttribute("data-original-stroke", origStroke);
@@ -77,7 +76,9 @@ function selectStation(stationId) {
 
   const name = caption ? caption.textContent.trim() : "Без названия";
   document.getElementById('l_value').innerHTML = name;
-  window.androidObj.textToAndroid(name);
+
+  // ✅ отправка в Android
+  window.androidObj.textToAndroid(`${stationId}:select`);
 }
 
 function deselectStation(stationId) {
@@ -102,8 +103,11 @@ function deselectStation(stationId) {
   if (caption) caption.classList.remove("caption-selected");
 
   document.getElementById('l_value').innerHTML = '';
-  window.androidObj.textToAndroid('');
+
+  // ✅ отправка в Android
+  window.androidObj.textToAndroid(`${stationId}:deselect`);
 }
+
 
 function updateFromAndroid(message) {
   document.getElementById('l_value').innerHTML = message;
