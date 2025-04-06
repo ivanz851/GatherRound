@@ -1,10 +1,9 @@
 window.androidObj = function AndroidClass() {};
 
-var node = '.selected {stroke: black;} .caption-selected {font-weight: bold;}'; // custom style class has been injected into the SVG body inside HTML
-var nodex = '.default{fill:#e9e9e9;}';
-var svg = document.getElementsByTagName('svg')[0];
+const svg = document.getElementsByTagName('svg')[0];
 
-let styleTag = document.createElementNS("http://www.w3.org/2000/svg", "style");
+// Добавляем стили внутрь SVG
+const styleTag = document.createElementNS("http://www.w3.org/2000/svg", "style");
 styleTag.textContent = `
   .selected { stroke: black !important; }
   .caption-selected { font-weight: bold; }
@@ -12,107 +11,98 @@ styleTag.textContent = `
 `;
 svg.insertBefore(styleTag, svg.firstChild);
 
-document.addEventListener("click", doSomething);
+// Очищаем inline-стили у станций
+document.querySelectorAll('*[id^=station-]').forEach(el => {
+  el.removeAttribute('style');
+  if (el.classList.contains('state')) {
+    el.classList.add('default');
+  }
+});
 
-var query = '*[id^=station-]';
-var tablePathList = document.querySelectorAll(query);
-var table;
-for (table = 0; table < tablePathList.length; table++) {
-    tablePathList[table].removeAttribute('style');
-    if (tablePathList[table].classList.contains('state')) {
-        document.getElementById(tablePathList[table].id).classList.add('default');
-    }
-}
-
-// Храним ID текущей выделенной станции
 let currentSelectedStationId = null;
 
-function doSomething(e) {
-  if (e.target !== e.currentTarget) {
-    let el = e.target;
+document.addEventListener("click", handleClick);
 
-    // Поднимаемся вверх по дереву, пока не найдём элемент с нужным id
-    while (el && el !== document) {
-      if (el.id && (el.id.startsWith("station-") || el.id.startsWith("caption-"))) {
-        break;
-      }
-      el = el.parentNode;
+function handleClick(e) {
+  let el = e.target;
+
+  // Поднимаемся вверх, пока не найдём элемент с нужным ID
+  while (el && el !== document) {
+    if (el.id && (el.id.startsWith("station-") || el.id.startsWith("caption-"))) {
+      break;
     }
-
-    if (!el || !el.id) return;
-
-    let clickedId = el.id;
-
-    if (!clickedId.startsWith("station-") && !clickedId.startsWith("caption-")) return;
-
-    let stationNum = clickedId.split("-")[1];
-    let stationId = `station-${stationNum}`;
-    let captionId = `caption-${stationNum}`;
-
-    let stationElement = document.getElementById(stationId);
-    let captionElement = document.getElementById(captionId);
-
-    let stationCircle = null;
-
-    if (!stationElement) return;
-
-    if (stationElement.tagName.toLowerCase() === "circle") {
-      stationCircle = stationElement;
-    } else {
-      stationCircle = stationElement.querySelector("circle");
-    }
-
-    if (!stationCircle) return;
-
-    // Если повторное нажатие по уже выделенной станции — снимаем выделение
-    if (currentSelectedStationId === stationId) {
-      stationCircle.classList.remove("selected");
-
-      // Восстановим оригинальный цвет
-      const originalStroke = stationCircle.getAttribute("data-original-stroke");
-      if (originalStroke) {
-        stationCircle.setAttribute("stroke", originalStroke);
-      }
-
-      if (captionElement) captionElement.classList.remove("caption-selected");
-      document.getElementById('l_value').innerHTML = '';
-      window.androidObj.textToAndroid('');
-      currentSelectedStationId = null;
-      return;
-    }
-
-
-    // Удаляем выделение со всех станций
-    document.querySelectorAll('circle[id^="station-"], g[id^="station-"] circle').forEach(c => {
-      c.classList.remove("selected");
-      //c.removeAttribute("stroke");
-    });
-
-    document.querySelectorAll('[id^="caption-"]').forEach(c => c.classList.remove("caption-selected"));
-
-    // Добавляем новое выделение
-    stationCircle.classList.add("selected");
-    // Сохраняем оригинальный цвет один раз
-    if (!stationCircle.hasAttribute("data-original-stroke")) {
-      const originalStroke = stationCircle.getAttribute("stroke") || "";
-      stationCircle.setAttribute("data-original-stroke", originalStroke);
-    }
-    stationCircle.setAttribute("stroke", "black");
-
-
-    if (captionElement) {
-      captionElement.classList.add("caption-selected");
-    }
-
-    let stationName = captionElement ? captionElement.textContent.trim() : "Без названия";
-
-    document.getElementById('l_value').innerHTML = stationName;
-    window.androidObj.textToAndroid(stationName);
-
-    currentSelectedStationId = stationId;
+    el = el.parentNode;
   }
 
+  if (!el || !el.id) return;
+
+  const stationNum = el.id.split("-")[1];
+  const stationId = `station-${stationNum}`;
+
+  // Повторное нажатие — снимаем выделение
+  if (stationId === currentSelectedStationId) {
+    deselectStation(stationId);
+    currentSelectedStationId = null;
+    return;
+  }
+
+  // Выделяем новую станцию
+  deselectStation(currentSelectedStationId); // снимаем с предыдущей
+  selectStation(stationId);
+  currentSelectedStationId = stationId;
   e.stopPropagation();
+}
+
+function selectStation(stationId) {
+  const stationElem = document.getElementById(stationId);
+  if (!stationElem) return;
+
+  const circle = stationElem.tagName.toLowerCase() === "circle"
+    ? stationElem
+    : stationElem.querySelector("circle");
+  if (!circle) return;
+
+  const caption = document.getElementById("caption-" + stationId.split("-")[1]);
+
+  // Сохраняем оригинальный stroke при первом выделении
+  if (!circle.hasAttribute("data-original-stroke")) {
+    const origStroke = circle.getAttribute("stroke") || "";
+    circle.setAttribute("data-original-stroke", origStroke);
+  }
+
+  circle.classList.add("selected");
+  circle.setAttribute("stroke", "black");
+
+  if (caption) caption.classList.add("caption-selected");
+
+  const name = caption ? caption.textContent.trim() : "Без названия";
+  document.getElementById('l_value').innerHTML = name;
+  window.androidObj.textToAndroid(name);
+}
+
+function deselectStation(stationId) {
+  if (!stationId) return;
+
+  const stationElem = document.getElementById(stationId);
+  if (!stationElem) return;
+
+  const circle = stationElem.tagName.toLowerCase() === "circle"
+    ? stationElem
+    : stationElem.querySelector("circle");
+  if (!circle) return;
+
+  circle.classList.remove("selected");
+
+  const origStroke = circle.getAttribute("data-original-stroke");
+  if (origStroke) {
+    circle.setAttribute("stroke", origStroke);
+  }
+
+  const caption = document.getElementById("caption-" + stationId.split("-")[1]);
+  if (caption) caption.classList.remove("caption-selected");
+
+  document.getElementById('l_value').innerHTML = '';
+  window.androidObj.textToAndroid('');
 }
 
 function updateFromAndroid(message) {
