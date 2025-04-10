@@ -1,10 +1,4 @@
-/*
- * Copyright (c) 2019.
- * Bismillahir Rahmanir Rahim,
- * Developer : Saadat Sayem
- */
-
-package com.sam43.svginteractiondemo
+package app.gatherround.stations_input
 
 import android.content.Context
 import android.util.Log
@@ -24,10 +18,7 @@ import retrofit2.http.Streaming
 import retrofit2.http.Url
 
 object Repository {
-
     private var service: APIService
-
-
     init {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         val intercept = httpLoggingInterceptor.apply {

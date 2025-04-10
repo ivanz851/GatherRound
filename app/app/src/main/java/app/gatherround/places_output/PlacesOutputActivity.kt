@@ -1,4 +1,4 @@
-package app.gatherround
+package app.gatherround.places_output
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import app.gatherround.places.Place
 import app.gatherround.places.PlacesData
 
-class EventListActivity : ComponentActivity() {
+class PlacesOutputActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

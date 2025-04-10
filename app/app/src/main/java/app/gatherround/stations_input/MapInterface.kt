@@ -1,4 +1,4 @@
-package app.gatherround.EptaActivity
+package app.gatherround.stations_input
 
 import android.webkit.JavascriptInterface
 

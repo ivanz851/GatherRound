@@ -1,4 +1,4 @@
-package app.gatherround.EptaActivity
+package app.gatherround.stations_input
 
 import android.webkit.WebChromeClient
 import android.webkit.WebView
@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 
 @Composable
-fun WebMapBlock(
+fun InteractiveMapInput(
     htmlContent: String?,
     onStationClicked: (String, String) -> Unit,
     modifier: Modifier = Modifier

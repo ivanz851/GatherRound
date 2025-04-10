@@ -1,4 +1,4 @@
-package app.gatherround.EptaActivity
+package app.gatherround.stations_input
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,14 +10,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
-import com.sam43.svginteractiondemo.FileDownloaderVM
-import com.sam43.svginteractiondemo.getHTMLBody
 
-class InteractiveMapActivity : ComponentActivity() {
+class MainActivity : ComponentActivity() {
 
     private val fileDownloaderVM: FileDownloaderVM by viewModels()
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +29,7 @@ class InteractiveMapActivity : ComponentActivity() {
                 LaunchedEffect(Unit) {
                     val url = "https://raw.githubusercontent.com/ivanz851/GatherRound/refs/heads/implement_interactve_metro_map/app/app/src/main/assets/initial.svg"
                     try {
-                        fileDownloaderVM.downloadFileFromServer(url).observe(this@InteractiveMapActivity) { response ->
+                        fileDownloaderVM.downloadFileFromServer(url).observe(this@MainActivity) { response ->
                             val svg = response.string()
                             htmlContent.value = getHTMLBody(svg)
                         }
@@ -42,7 +38,7 @@ class InteractiveMapActivity : ComponentActivity() {
                     }
                 }
 
-                InteractiveMapScreen(
+                InputScreen(
                     metroData = metroData,
                     stationsNames = stationsNames,
                     graph = graph,

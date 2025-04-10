@@ -1,8 +1,5 @@
-window.androidObj = function AndroidClass() {};
-
 const svg = document.getElementsByTagName('svg')[0];
 
-// Добавляем стили внутрь SVG
 const styleTag = document.createElementNS("http://www.w3.org/2000/svg", "style");
 styleTag.textContent = `
   .selected { stroke: black !important; }
@@ -11,7 +8,6 @@ styleTag.textContent = `
 `;
 svg.insertBefore(styleTag, svg.firstChild);
 
-// Очищаем inline-стили у станций
 document.querySelectorAll('*[id^=station-]').forEach(el => {
   el.removeAttribute('style');
   if (el.classList.contains('state')) {
@@ -26,7 +22,6 @@ document.addEventListener("click", handleClick);
 function handleClick(e) {
   let el = e.target;
 
-  // Поднимаемся вверх, пока не найдём элемент с нужным ID
   while (el && el !== document) {
     if (el.id && (el.id.startsWith("station-") || el.id.startsWith("caption-"))) {
       break;
@@ -39,15 +34,13 @@ function handleClick(e) {
   const stationNum = el.id.split("-")[1];
   const stationId = `station-${stationNum}`;
 
-  // Повторное нажатие — снимаем выделение
   if (stationId === currentSelectedStationId) {
     deselectStation(stationId);
     currentSelectedStationId = null;
     return;
   }
 
-  // Выделяем новую станцию
-  deselectStation(currentSelectedStationId); // снимаем с предыдущей
+  deselectStation(currentSelectedStationId);
   selectStation(stationId);
   currentSelectedStationId = stationId;
   e.stopPropagation();
@@ -77,8 +70,7 @@ function selectStation(stationId) {
   const name = caption ? caption.textContent.trim() : "Без названия";
   document.getElementById('l_value').innerHTML = name;
 
-  // ✅ отправка в Android
-  window.androidObj.textToAndroid(`${stationId}:select`);
+  window.androidObj.onStationClick(`${stationId}:select`);
 }
 
 function deselectStation(stationId) {
@@ -104,8 +96,7 @@ function deselectStation(stationId) {
 
   document.getElementById('l_value').innerHTML = '';
 
-  // ✅ отправка в Android
-  window.androidObj.textToAndroid(`${stationId}:deselect`);
+  window.androidObj.onStationClick(`${stationId}:deselect`);
 }
 
 
