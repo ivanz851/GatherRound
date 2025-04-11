@@ -39,7 +39,7 @@ data class Station(
     }
 
     override fun toString(): String {
-        return "Station(name=$name, lineId=$lineId)"
+        return "Station(name=$name, lineId=$lineId, id=$id)"
     }
 }
 

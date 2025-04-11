@@ -12,6 +12,12 @@ fun findOptimalPlaces(
     selectedStations: Set<Station>,
     placesData: PlacesData,
 ): String? {
+    println("👉 Выбранные станции (${selectedStations.size}):")
+    selectedStations.forEachIndexed { index, station ->
+        val name = station.name[RUSSIAN] ?: "Без названия"
+        println("  ${index + 1}. $name (ID: ${station.id}, Линия: ${station.lineId})")
+    }
+
     val optimalStation = metroGraph.findOptimalVertex(selectedStations).first
 
     println("optimal station = ${optimalStation!!}")

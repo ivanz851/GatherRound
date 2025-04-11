@@ -18,7 +18,10 @@ import retrofit2.http.Streaming
 import retrofit2.http.Url
 
 object Repository {
+
     private var service: APIService
+
+
     init {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         val intercept = httpLoggingInterceptor.apply {
@@ -69,25 +72,23 @@ interface APIService {
 
 fun Context.toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
 
-fun getHTMLBody(svgString: String) = "<!DOCTYPE HTML>\n" +
-        "<html>\n" +
-        "\n" +
-        "<head>\n" +
-        "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=10\">\n" +
-        "    <style>\n" +
-        "        body {\n" +
-        "            text-align: center;\n" +
-        "        }\n" +
-        "    </style>\n" +
-        "</head>\n" +
-        "\n" +
-        "<body>\n" +
-        "    <h3 id=\"l_value\">WebView</h3>\n" +
-        "    <div id=\"div\" class=\"container\">\n" +
-        "\t\n" +
-        svgString +
-        "\n" +
-        "    <script src=\"index.js\"></script>\n" +
-        "</body>\n" +
-        "\n" +
-        "</html>"
+fun getHTMLBody(svgString: String) = """
+    <!DOCTYPE HTML>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=4, maximum-scale=10">
+        <style>
+            body {
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <h3 id="l_value">WebView</h3>
+        <div id="div" class="container">
+            $svgString
+        </div>
+        <script src="index.js"></script>
+    </body>
+    </html>
+""".trimIndent()

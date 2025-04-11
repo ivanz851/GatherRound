@@ -6,14 +6,17 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
+import app.gatherround.metro.Station
 
 class MainActivity : ComponentActivity() {
 
     private val fileDownloaderVM: FileDownloaderVM by viewModels()
+    private val selectedStations = mutableStateListOf<Station>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +45,8 @@ class MainActivity : ComponentActivity() {
                     metroData = metroData,
                     stationsNames = stationsNames,
                     graph = graph,
-                    htmlContent = htmlContent.value
+                    htmlContent = htmlContent.value,
+                    selectedStations = selectedStations
                 )
             }
         }

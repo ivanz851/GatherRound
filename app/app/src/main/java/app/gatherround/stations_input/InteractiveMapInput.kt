@@ -11,6 +11,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 fun InteractiveMapInput(
     htmlContent: String?,
     onStationClicked: (String, String) -> Unit,
+    onStationClickedWithResult: (String, String) -> Boolean,
     modifier: Modifier = Modifier
 ) {
     AndroidView(
@@ -30,9 +31,11 @@ fun InteractiveMapInput(
                 webChromeClient = WebChromeClient()
 
                 addJavascriptInterface(
-                    MapInterface { id, status ->
-                        post { onStationClicked(id, status) }
-                    },
+                    MapInterface(
+                        webView = this,
+                        onStationClicked = onStationClicked,
+                        onStationClickedWithResult = onStationClickedWithResult
+                    ),
                     "androidObj"
                 )
             }

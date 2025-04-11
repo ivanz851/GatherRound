@@ -1,3 +1,6 @@
+
+
+
 const svg = document.getElementsByTagName('svg')[0];
 
 const styleTag = document.createElementNS("http://www.w3.org/2000/svg", "style");
@@ -15,11 +18,11 @@ document.querySelectorAll('*[id^=station-]').forEach(el => {
   }
 });
 
-let currentSelectedStationId = null;
+const selectedStationIds = new Set();
 
 document.addEventListener("click", handleClick);
 
-function handleClick(e) {
+async function handleClick(e) {
   let el = e.target;
 
   while (el && el !== document) {
@@ -34,16 +37,33 @@ function handleClick(e) {
   const stationNum = el.id.split("-")[1];
   const stationId = `station-${stationNum}`;
 
-  if (stationId === currentSelectedStationId) {
+  if (selectedStationIds.has(stationId)) {
     deselectStation(stationId);
-    currentSelectedStationId = null;
+    selectedStationIds.delete(stationId);
     return;
-  }
+  } else {
+    const allowed = await canSelectStation(stationId);
+    if (!allowed) return;
 
-  deselectStation(currentSelectedStationId);
-  selectStation(stationId);
-  currentSelectedStationId = stationId;
+    selectStation(stationId);
+    selectedStationIds.add(stationId);
+  }
   e.stopPropagation();
+}
+
+function canSelectStation(stationId) {
+  return new Promise((resolve) => {
+    try {
+      const callbackName = `callback_${Date.now()}`;
+      window[callbackName] = (result) => {
+        resolve(result === "true");
+        delete window[callbackName];
+      };
+      androidObj.onStationClickedWithResult(stationId, "select", callbackName);
+    } catch (e) {
+      resolve(false);
+    }
+  });
 }
 
 function selectStation(stationId) {
