@@ -142,8 +142,8 @@ fun InputScreen(
 
 
 
-/*
 
+/*
         Text(
             text = "Выбранные станции:",
             style = MaterialTheme.typography.titleMedium,
@@ -169,6 +169,6 @@ fun InputScreen(
                 }
         }
 
-        */
+*/
     }
 }

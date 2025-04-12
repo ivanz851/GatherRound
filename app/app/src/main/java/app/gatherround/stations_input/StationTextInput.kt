@@ -109,6 +109,7 @@ fun StationInputBlock(
                 },
                 showDelete = stations.size > 1,
                 showAdd = stationIndex == stations.lastIndex && stations.size < 6,
+                webView = webView,
             )
 
             if (stationIndex < stations.lastIndex) {
@@ -157,6 +158,7 @@ fun StationInputField(
     onAddClick: () -> Unit,
     showDelete: Boolean,
     showAdd: Boolean,
+    webView: WebView?,
 ) {
     var curStationName by remember(station) { mutableStateOf(station.name[RUSSIAN]!!) }
     var expanded by remember { mutableStateOf(false) }
@@ -200,6 +202,10 @@ fun StationInputField(
                     Row {
                         if (curStationName.isNotEmpty()) {
                             IconButton(onClick = {
+                                if (station.id != -1) {
+                                    webView?.evaluateJavascript("deselectStation('station-${station.id}')", null)
+                                }
+
                                 curStationName = ""
                                 onValueChange(station.copy(name = station.name.toMutableMap().apply { put(
                                     RUSSIAN, "") },
