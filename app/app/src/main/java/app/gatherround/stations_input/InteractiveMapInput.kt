@@ -12,7 +12,8 @@ fun InteractiveMapInput(
     htmlContent: String?,
     onStationClicked: (String, String) -> Unit,
     onStationClickedWithResult: (String, String) -> Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onWebViewCreated: (WebView) -> Unit = {}
 ) {
     AndroidView(
         factory = { context ->
@@ -27,6 +28,11 @@ fun InteractiveMapInput(
                 settings.useWideViewPort = true
                 settings.loadWithOverviewMode = true
 
+                settings.builtInZoomControls = true
+                settings.displayZoomControls = false
+                settings.setSupportZoom(true)
+
+
                 webViewClient = WebViewClient()
                 webChromeClient = WebChromeClient()
 
@@ -34,10 +40,12 @@ fun InteractiveMapInput(
                     MapInterface(
                         webView = this,
                         onStationClicked = onStationClicked,
-                        onStationClickedWithResult = onStationClickedWithResult
+                        onStationClickedWithResult = onStationClickedWithResult,
                     ),
                     "androidObj"
                 )
+
+                onWebViewCreated(this)
             }
         },
         update = { webView ->

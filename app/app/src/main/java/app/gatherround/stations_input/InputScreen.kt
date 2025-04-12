@@ -1,5 +1,6 @@
 package app.gatherround.stations_input
 
+import android.webkit.WebView
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,6 +9,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.gatherround.metro.MetroData
@@ -104,13 +107,16 @@ fun InputScreen(
 
 
     Column(modifier = Modifier.fillMaxSize()) {
+        var webViewRef = remember { mutableStateOf<WebView?>(null) }
+
         InteractiveMapInput(
             htmlContent = htmlContent,
             onStationClicked = onStationClicked,
             onStationClickedWithResult = onStationClickedWithResult,
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            onWebViewCreated = { webView -> webViewRef.value = webView }
         )
 
 
@@ -121,7 +127,9 @@ fun InputScreen(
             stationsNames = stationsNames,
             metroData = metroData,
             graph = graph,
-            modifier = Modifier.weight(0.4f)
+            webView = webViewRef.value,
+            modifier = Modifier.weight(0.4f),
+            onStationClicked = onStationClicked
         )
 
 

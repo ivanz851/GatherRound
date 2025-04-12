@@ -1,6 +1,7 @@
 package app.gatherround.stations_input
 
 import android.content.Intent
+import android.webkit.WebView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -58,7 +59,9 @@ fun StationInputBlock(
     stationsNames: List<Pair<String, String>>,
     metroData: MetroData,
     graph: MetroGraph,
-    modifier: Modifier = Modifier
+    webView: WebView?,
+    modifier: Modifier = Modifier,
+    onStationClicked: ((String, String) -> Unit)? = null
 ) {
     val context = LocalContext.current
 
@@ -70,6 +73,10 @@ fun StationInputBlock(
                 stationsNames = stationsNames,
                 onValueChange = { newStation ->
                     stations[stationIndex] = newStation
+
+                    if (newStation.id != -1) {
+                        webView?.evaluateJavascript("selectStation('station-${newStation.id}')", null)
+                    }
                 },
                 onClose = {
                     stations.removeAt(stationIndex)

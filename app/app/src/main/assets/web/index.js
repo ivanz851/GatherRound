@@ -1,6 +1,3 @@
-
-
-
 const svg = document.getElementsByTagName('svg')[0];
 
 const styleTag = document.createElementNS("http://www.w3.org/2000/svg", "style");
@@ -39,14 +36,11 @@ async function handleClick(e) {
 
   if (selectedStationIds.has(stationId)) {
     deselectStation(stationId);
-    selectedStationIds.delete(stationId);
-    return;
   } else {
     const allowed = await canSelectStation(stationId);
     if (!allowed) return;
 
     selectStation(stationId);
-    selectedStationIds.add(stationId);
   }
   e.stopPropagation();
 }
@@ -91,6 +85,8 @@ function selectStation(stationId) {
   document.getElementById('l_value').innerHTML = name;
 
   window.androidObj.onStationClick(`${stationId}:select`);
+
+  selectedStationIds.add(stationId);
 }
 
 function deselectStation(stationId) {
@@ -117,6 +113,8 @@ function deselectStation(stationId) {
   document.getElementById('l_value').innerHTML = '';
 
   window.androidObj.onStationClick(`${stationId}:deselect`);
+
+  selectedStationIds.delete(stationId);
 }
 
 
