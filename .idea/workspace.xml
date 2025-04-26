@@ -6,10 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="5baed8f7-4bd0-4c9c-8deb-97c5b3936a12" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/app/src/main/java/app/gatherround/StationInputActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/app/src/main/java/app/gatherround/StationInputActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/app/src/main/java/app/gatherround/metro/MetroData.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/app/src/main/java/app/gatherround/metro/MetroData.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/app/src/main/java/app/gatherround/metro/Station.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/app/src/main/java/app/gatherround/metro/Station.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +18,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "ivanz851"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:ivanz851/GatherRound.git",
+    "accountId": "721f4860-e6e4-4b5c-a6b9-0c098c589436"
+  }
+}]]></component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -40,12 +48,13 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "android.gradle.sync.needed": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "fix__stations__input",
+    "git-widget-placeholder": "show__events__on__map",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/test/user/Учеба/ВШЭ 3 курс/Курсовой проект/GatherRound/app",
+    "last_opened_file_path": "C:/Users/test/user/study/hse_3_course/course_project/gather_round/app",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0"

@@ -48,6 +48,7 @@ import app.gatherround.metro.RUSSIAN
 import app.gatherround.metro.Station
 import app.gatherround.places.PlacesData
 import app.gatherround.places_output.PlacesOutputActivity
+import app.gatherround.places_output.PlacesOutputMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -133,7 +134,7 @@ fun StationInputBlock(
                             findOptimalPlaces(graph, chosenStations, placesData)
                         } ?: return@launch
 
-                        val intent = Intent(context, PlacesOutputActivity::class.java).apply {
+                        val intent = Intent(context, PlacesOutputMap::class.java).apply {
                             putExtra("places_json", eventsJson)
                         }
                         context.startActivity(intent)

@@ -1,5 +1,5 @@
 package app.gatherround.stations_input
-
+//
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
                 val htmlContent = remember { mutableStateOf<String?>(null) }
 
                 LaunchedEffect(Unit) {
-                    val url = "https://raw.githubusercontent.com/ivanz851/GatherRound/refs/heads/implement_interactve_metro_map/app/app/src/main/assets/initial.svg"
+                    val url = "https://raw.githubusercontent.com/ivanz851/GatherRound/refs/heads/main/app/app/src/main/assets/initial.svg"
                     try {
                         fileDownloaderVM.downloadFileFromServer(url).observe(this@MainActivity) { response ->
                             val svg = response.string()
