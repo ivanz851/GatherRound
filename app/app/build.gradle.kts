@@ -13,10 +13,10 @@ android {
 
     defaultConfig {
         applicationId = "app.gatherround"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
-        versionCode = 6
-        versionName = "1.5"
+        versionCode = 8
+        versionName = "1.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -48,7 +48,7 @@ android {
         viewBinding = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
     packaging {
         resources {
@@ -76,6 +76,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+    implementation(libs.yandex.maps)
+
+
 
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
