@@ -130,11 +130,16 @@ fun StationInputBlock(
                         val chosenStations = stations.filter { it.id != -1 }.toSet()
                         val placesData = PlacesData()
 
-                        val eventsJson = withContext(Dispatchers.IO) {
+                        val optimaPlacesData = withContext(Dispatchers.IO) {
                             findOptimalPlaces(graph, chosenStations, placesData)
                         } ?: return@launch
 
+                        val optimalStation = optimaPlacesData.first!!
+                        val eventsJson = optimaPlacesData.second!!
+
                         val intent = Intent(context, PlacesOutputMap::class.java).apply {
+                            putExtra("station_lat", optimalStation.location!!.lat)
+                            putExtra("station_lon", optimalStation.location!!.lon)
                             putExtra("places_json", eventsJson)
                         }
                         context.startActivity(intent)

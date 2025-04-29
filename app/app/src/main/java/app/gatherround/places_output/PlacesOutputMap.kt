@@ -24,118 +24,99 @@ import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.mapview.MapView
 import android.net.Uri
+import android.widget.Toast
 import app.gatherround.R
+import app.gatherround.metro.Location
 import com.yandex.mapkit.map.IconStyle
 import com.yandex.runtime.image.ImageProvider
 
+
+
 class PlacesOutputMap : ComponentActivity() {
-
-    private lateinit var mapView: MapView
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        MapKitFactory.setApiKey("1e290826-198f-483d-90a5-638e7122ef51")
-        MapKitFactory.initialize(this)
-
-        val jsonString = intent.getStringExtra("places_json") ?: ""
-        val places = PlacesData().parsePlaces(jsonString)
-
-        setContent {
-            MapScreen(places = places) {
-                finish()
-            }
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        MapKitFactory.getInstance().onStart()
-        if (::mapView.isInitialized) mapView.onStart()
-    }
-
-    override fun onStop() {
-        if (::mapView.isInitialized) mapView.onStop()
-        MapKitFactory.getInstance().onStop()
-        super.onStop()
-    }
-
     @Composable
-    fun MapScreen(places: List<Place>, onBackClick: () -> Unit) {
+    fun MapScreen(
+        places: List<Place>,
+        mapView: MapView,
+        onBackClick: () -> Unit
+    ) {
         val context = LocalContext.current
-        var selectedPlaceId by remember { mutableStateOf<String?>(null) }
+        var selectedPlaceId by remember { mutableStateOf<Int?>(null) }
 
-        val mapView = remember { MapView(context) }
-
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(Modifier.fillMaxSize()) {
             AndroidView(
-                factory = {
-                    mapView
-                },
                 modifier = Modifier.fillMaxSize(),
-            ) {
-                mapView ->
-                val mapObjects = mapView.map.mapObjects
-                val imageProvider = ImageProvider.fromResource(context, R.drawable.ic_custom_pin)
+                factory = { mapView  },
+                update  = { mv ->
+                    val mapObjects = mv.map.mapObjects
+                    val pin = ImageProvider.fromResource(context, R.drawable.ic_custom_pin)
 
-                mapObjects.clear()
+                    mapObjects.clear()
 
-                for (place in places) {
-                    if (place.coords?.lat != null &&
-                        place.coords.lon != null) {
-                        val point = Point(place.coords.lat, place.coords.lon)
-                        val placemark = mapObjects.addPlacemark().apply {
-                            geometry = point
-                            setIcon(imageProvider)
-                            setIconStyle(
-                                IconStyle().apply {
-                                    scale = 2.0f
-                                    anchor = PointF(0.5f, 1.0f)
+                    for (p in places) {
+                        val lat = p.coords?.lat
+                        val lon = p.coords?.lon
+                        if (lat != null && lon != null) {
+                            val point = Point(lat, lon)
+                            mapObjects.addPlacemark(point, pin).apply {
+                                setIconStyle(
+                                    IconStyle().apply {
+                                        scale = 2f
+                                        anchor = PointF(0.5f, 1f)
+                                    }
+                                )
+                                addTapListener { _, _ ->
+                                    selectedPlaceId = p.id
+                                    true
                                 }
-                            )
-                            addTapListener { _, _ ->
-                                selectedPlaceId = "${place.id}"
-                                true
                             }
                         }
                     }
+
+                    if (places.isNotEmpty()) {
+                        val first = places.first().coords!!
+                        mv.map.move(
+                            CameraPosition(
+                                Point(first.lat!!, first.lon!!),
+                                14f, 0f, 0f
+                            )
+                        )
+                    }
                 }
+            )
 
-                if (places.isNotEmpty()) {
-                    val first = places.first()
-                    val lat = first.coords?.lat ?: 0.0
-                    val lon = first.coords?.lon ?: 0.0
-                    mapView.map.move(
-                        CameraPosition(Point(lat, lon), 14.0f, 0.0f, 0.0f)
-                    )
-                }
-            }
-
-            val selectedPlace = places.find {
-                "${it.id}" == selectedPlaceId
-            }
-
-            selectedPlace?.let { place ->
+            places.find { it.id == selectedPlaceId }?.let { place ->
                 AlertDialog(
                     onDismissRequest = { selectedPlaceId = null },
-                    title = { Text("Место: ${place.title}") },
-                    text = { Text("Построить маршрут до:\n${place.address}") },
+                    title = { Text(place.title) },
+                    text  = { Text("Построить маршрут до:\n${place.address}") },
                     confirmButton = {
                         TextButton(onClick = {
                             selectedPlaceId = null
-                            // TODO: Здесь можно вызвать навигацию
-                            val gmmIntentUri = Uri.parse("google.navigation:q=${place.id}")
-                            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-                            mapIntent.setPackage("com.google.android.apps.maps")
-                            context.startActivity(mapIntent)
-                        }) {
-                            Text("Построить маршрут")
-                        }
+
+                            val latFrom = stationLat
+                            val lonFrom = stationLon
+                            val latTo   = place.coords!!.lat!!
+                            val lonTo   = place.coords.lon!!
+
+                            val url = "https://yandex.ru/maps/?" +
+                                    "rtext=$latFrom,$lonFrom~$latTo,$lonTo" +
+                                    "&rtt=pd"
+
+                            val uri = Uri.parse(url)
+
+                            val mapsIntent = Intent(Intent.ACTION_VIEW, uri).apply {
+                                setPackage("ru.yandex.yandexmaps")
+                            }
+
+                            if (mapsIntent.resolveActivity(packageManager) != null) {
+                                startActivity(mapsIntent)
+                            } else {
+                                startActivity(Intent(Intent.ACTION_VIEW, uri))
+                            }
+                        }) { Text("Построить маршрут") }
                     },
                     dismissButton = {
-                        TextButton(onClick = { selectedPlaceId = null }) {
-                            Text("Отмена")
-                        }
+                        TextButton({ selectedPlaceId = null }) { Text("Отмена") }
                     }
                 )
             }
@@ -145,9 +126,45 @@ class PlacesOutputMap : ComponentActivity() {
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(16.dp)
-            ) {
-                Text("Назад")
-            }
+            ) { Text("Назад") }
         }
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        MapKitFactory.setApiKey("1e290826-198f-483d-90a5-638e7122ef51")
+        MapKitFactory.initialize(this)
+
+        mapView = MapView(this)
+
+        stationLat = intent.getDoubleExtra("station_lat", 0.0)
+        stationLon = intent.getDoubleExtra("station_lon", 0.0)
+        val jsonString = intent.getStringExtra("places_json") ?: ""
+        val places = PlacesData().parsePlaces(jsonString)
+
+        setContent {
+            MapScreen(
+                places = places,
+                mapView = mapView,
+                onBackClick = { finish() }
+            )
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        MapKitFactory.getInstance().onStart()
+        mapView.onStart()
+    }
+
+    override fun onStop() {
+        mapView.onStop()
+        MapKitFactory.getInstance().onStop()
+        super.onStop()
+    }
+
+    private lateinit var mapView: MapView
+    private var stationLat: Double = 0.0
+    private var stationLon: Double = 0.0
 }

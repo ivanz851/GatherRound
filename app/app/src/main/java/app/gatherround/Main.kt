@@ -1,5 +1,6 @@
 package app.gatherround
 
+import android.util.Pair
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
 import app.gatherround.metro.RUSSIAN
@@ -11,7 +12,7 @@ fun findOptimalPlaces(
     metroGraph: MetroGraph,
     selectedStations: Set<Station>,
     placesData: PlacesData,
-): String? {
+): Pair<Station?, String?> {
     println("👉 Выбранные станции (${selectedStations.size}):")
     selectedStations.forEachIndexed { index, station ->
         val name = station.name[RUSSIAN] ?: "Без названия"
@@ -21,7 +22,7 @@ fun findOptimalPlaces(
     val optimalStation = metroGraph.findOptimalVertex(selectedStations).first
 
     println("optimal station = ${optimalStation!!}")
-    return placesData.getPlacesByStation(optimalStation!!)
+    return Pair(optimalStation, placesData.getPlacesByStation(optimalStation))
 }
 
 fun main() {
@@ -62,7 +63,7 @@ fun main() {
 
     var places = placesData.fetchPlacesInMoscow()
 
-    places = PlacesData().parsePlaces(findOptimalPlaces(graph, chosenStations, placesData)!!)
+    places = PlacesData().parsePlaces(findOptimalPlaces(graph, chosenStations, placesData).second!!)
 
     if (places.isNotEmpty()) {
         println("Полученные места: ${places.size}\n")

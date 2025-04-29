@@ -9,14 +9,21 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.gatherround.findOptimalPlaces
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
 import app.gatherround.metro.RUSSIAN
 import app.gatherround.metro.Station
+import app.gatherround.places.PlacesData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun InputScreen(
@@ -119,8 +126,32 @@ fun InputScreen(
             onWebViewCreated = { webView -> webViewRef.value = webView }
         )
 
-
         HorizontalDivider()
+
+
+        val endStation by remember(selectedStations) {
+            derivedStateOf {
+                val chosen = selectedStations.filter { it.id != -1 }
+                if (chosen.isEmpty()) {
+                    null
+                } else {
+                    val placesData = PlacesData()
+                    findOptimalPlaces(graph, chosen.toSet(), placesData).first
+                }
+            }
+        }
+        Text(
+            text = buildString {
+                append("Конечная станция: ")
+                append(endStation?.name?.get(RUSSIAN) ?: "—")
+            },
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+
 
         StationInputBlock(
             stations = selectedStations,
