@@ -4,8 +4,11 @@
         package="app.gatherround">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
+            android:name=".App"
             android:allowBackup="true"
             android:dataExtractionRules="@xml/data_extraction_rules"
             android:fullBackupContent="@xml/backup_rules"
@@ -26,6 +29,12 @@
         </activity>
         <activity
                 android:name=".places_output.PlacesOutputActivity"
+                android:exported="true"
+                android:label="@string/title_activity_event_list"
+                android:theme="@style/Theme.GatherRound" />
+
+        <activity
+                android:name=".places_output.PlacesOutputMap"
                 android:exported="true"
                 android:label="@string/title_activity_event_list"
                 android:theme="@style/Theme.GatherRound" />

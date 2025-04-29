@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
 
     kotlin("plugin.serialization") version "1.9.0"
+    id("kotlin-parcelize")
 }
 
 android {
@@ -13,10 +14,10 @@ android {
 
     defaultConfig {
         applicationId = "app.gatherround"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
-        versionCode = 6
-        versionName = "1.5"
+        versionCode = 9
+        versionName = "1.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -48,7 +49,7 @@ android {
         viewBinding = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
     packaging {
         resources {
@@ -76,6 +77,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+    implementation(libs.yandex.maps.full)
+
+
 
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)

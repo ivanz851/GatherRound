@@ -1,6 +1,8 @@
 package app.gatherround.stations_input
 
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.webkit.WebView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +50,11 @@ import app.gatherround.metro.RUSSIAN
 import app.gatherround.metro.Station
 import app.gatherround.places.PlacesData
 import app.gatherround.places_output.PlacesOutputActivity
+import app.gatherround.places_output.PlacesOutputMap
+import android.net.Uri
+import androidx.compose.material.icons.filled.DirectionsWalk
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -61,7 +68,8 @@ fun StationInputBlock(
     graph: MetroGraph,
     webView: WebView?,
     modifier: Modifier = Modifier,
-    onStationClicked: ((String, String) -> Unit)? = null
+    onStationClicked: ((String, String) -> Unit)? = null,
+    userLocation: Location?,
 ) {
     val context = LocalContext.current
 
@@ -110,6 +118,7 @@ fun StationInputBlock(
                 showDelete = stations.size > 1,
                 showAdd = stationIndex == stations.lastIndex && stations.size < 6,
                 webView = webView,
+                userLocation    = userLocation
             )
 
             if (stationIndex < stations.lastIndex) {
@@ -129,11 +138,16 @@ fun StationInputBlock(
                         val chosenStations = stations.filter { it.id != -1 }.toSet()
                         val placesData = PlacesData()
 
-                        val eventsJson = withContext(Dispatchers.IO) {
+                        val optimaPlacesData = withContext(Dispatchers.IO) {
                             findOptimalPlaces(graph, chosenStations, placesData)
                         } ?: return@launch
 
-                        val intent = Intent(context, PlacesOutputActivity::class.java).apply {
+                        val optimalStation = optimaPlacesData.first!!
+                        val eventsJson = optimaPlacesData.second!!
+
+                        val intent = Intent(context, PlacesOutputMap::class.java).apply {
+                            putExtra("station_lat", optimalStation.location!!.lat)
+                            putExtra("station_lon", optimalStation.location!!.lon)
                             putExtra("places_json", eventsJson)
                         }
                         context.startActivity(intent)
@@ -159,7 +173,9 @@ fun StationInputField(
     showDelete: Boolean,
     showAdd: Boolean,
     webView: WebView?,
+    userLocation: Location?,
 ) {
+    val context = LocalContext.current
     var curStationName by remember(station) { mutableStateOf(station.name[RUSSIAN]!!) }
     var expanded by remember { mutableStateOf(false) }
     var filteredStations by remember { mutableStateOf(stationsNames) }
@@ -224,6 +240,44 @@ fun StationInputField(
             )
 
             Spacer(modifier = Modifier.width(3.dp))
+
+            if (station.id != -1 && station.location != null && userLocation != null) {
+                IconButton(
+                    onClick = {
+                        val fromLat = userLocation.latitude
+                        val fromLon = userLocation.longitude
+                        val dest = station.location!!
+                        val appUri = Uri.parse(
+                            "yandexmaps://build_route_on_map/?" +
+                                    "lat_from=$fromLat&lon_from=$fromLon&" +
+                                    "lat_to=${dest.lat}&lon_to=${dest.lon}&" +
+                                    "route_type=pd"
+                        )
+                        val appIntent = Intent(Intent.ACTION_VIEW, appUri).apply {
+                            setPackage("ru.yandex.yandexmaps")
+                        }
+
+                        val browserUri = Uri.parse(
+                            "https://yandex.ru/maps/?" +
+                                    "rtext=$fromLat,$fromLon~${dest.lat},${dest.lon}&rtt=pd"
+                        )
+                        val finalIntent =
+                            if (appIntent.resolveActivity(context.packageManager) != null)
+                                appIntent else Intent(Intent.ACTION_VIEW, browserUri)
+
+                        context.startActivity(finalIntent)
+                    },
+                    modifier = Modifier.size(34.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.DirectionsWalk,
+                        contentDescription = "Маршрут из текущего положения",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            } else {
+                Spacer(Modifier.size(34.dp))
+            }
 
             Box(modifier = Modifier.size(48.dp)) {
                 if (showAdd) {
