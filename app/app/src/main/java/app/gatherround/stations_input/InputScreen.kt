@@ -1,5 +1,7 @@
 package app.gatherround.stations_input
 
+import android.content.pm.PackageManager
+import android.location.Location
 import android.webkit.WebView
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,17 +15,27 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import app.gatherround.findOptimalPlaces
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
 import app.gatherround.metro.RUSSIAN
 import app.gatherround.metro.Station
 import app.gatherround.places.PlacesData
+import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+
 
 @Composable
 fun InputScreen(
@@ -153,6 +165,40 @@ fun InputScreen(
         )
 
 
+        val context = LocalContext.current
+
+        val fusedLocationClient = remember {
+            LocationServices.getFusedLocationProviderClient(context)
+        }
+        var userLocation by remember { mutableStateOf<Location?>(null) }
+        val locationPermissionLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    if (location != null) {
+                        userLocation = location
+                    }
+                }
+            }
+        }
+
+        LaunchedEffect(Unit) {
+            val permission = Manifest.permission.ACCESS_FINE_LOCATION
+            when {
+                ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED -> {
+                    fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                        if (location != null) {
+                            userLocation = location
+                        }
+                    }
+                }
+                else -> {
+                    locationPermissionLauncher.launch(permission)
+                }
+            }
+        }
+
         StationInputBlock(
             stations = selectedStations,
             stationsNames = stationsNames,
@@ -160,7 +206,8 @@ fun InputScreen(
             graph = graph,
             webView = webViewRef.value,
             modifier = Modifier.weight(0.4f),
-            onStationClicked = onStationClicked
+            onStationClicked = onStationClicked,
+            userLocation = userLocation
         )
 
 
