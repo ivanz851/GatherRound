@@ -133,7 +133,6 @@ class PlacesOutputMap : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        MapKitFactory.setApiKey("1e290826-198f-483d-90a5-638e7122ef51")
         MapKitFactory.initialize(this)
 
         mapView = MapView(this)
