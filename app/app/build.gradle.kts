@@ -1,4 +1,11 @@
-import org.jetbrains.kotlin.storage.CacheResetOnProcessCanceled.enabled
+import java.util.Properties
+
+val envFile = rootProject.file("app/.env")
+val envProps = Properties()
+
+if (envFile.exists()) {
+    envFile.inputStream().use { envProps.load(it) }
+}
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -23,6 +30,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "MAPS_TOKEN", "\"${envProps["MAPS_TOKEN"]}\"")
     }
 
     buildTypes {
@@ -47,6 +56,7 @@ android {
     buildFeatures {
         compose = true
         viewBinding = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.15"
