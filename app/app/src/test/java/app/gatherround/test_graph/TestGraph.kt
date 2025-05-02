@@ -8,107 +8,89 @@ import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 
 class TestGraph {
-    private lateinit var graph: Graph<String>
+    private lateinit var g: Graph<String>
 
     @BeforeEach
     fun setUp() {
-        graph = Graph()
+        g = Graph()
     }
 
     @Test
-    fun testAddVertex() {
-        graph.addVertex("A")
-        assertTrue(graph.getVertices().contains("A"))
-        assertEquals(1, graph.getVertices().size)
+    fun `vertex is added only once`() {
+        val g = Graph<Int>()
+        g.addVertex(1)
+        g.addVertex(1)
+        assertEquals(setOf(1), g.getVertices())
     }
 
     @Test
-    fun testAddEdge() {
-        graph.addEdge("A", "B", 2)
-        assertTrue(graph.getVertices().contains("A"))
-        assertTrue(graph.getVertices().contains("B"))
-
-        val edgesA = graph.getAdjacentEdges("A")
-        val edgesB = graph.getAdjacentEdges("B")
-
-        assertEquals(1, edgesA.size)
-        assertEquals("B", edgesA[0].finish)
-        assertEquals(2, edgesA[0].weight)
-
-        assertEquals(1, edgesB.size)
-        assertEquals("A", edgesB[0].finish)
-        assertEquals(2, edgesB[0].weight)
+    fun `undirected edge is added in both directions`() {
+        val g = Graph<String>()
+        g.addEdge("A", "B")
+        val aNeighbours = g.getAdjacentEdges("A").map { it.finish }
+        val bNeighbours = g.getAdjacentEdges("B").map { it.finish }
+        assertAll(
+            { assertTrue("B" in aNeighbours) },
+            { assertTrue("A" in bNeighbours) }
+        )
     }
 
     @Test
-    fun testGetAdjacentEdges() {
-        graph.addEdge("A", "B")
-        graph.addEdge("A", "C", 3)
-
-        val edgesA = graph.getAdjacentEdges("A")
-        assertEquals(2, edgesA.size)
-
-        val finishes = edgesA.map { it.finish }
-        assertTrue(finishes.contains("B"))
-        assertTrue(finishes.contains("C"))
+    fun `getEdges returns double count for undirected edges`() {
+        val g = Graph<Int>()
+        g.addEdge(1, 2)
+        assertEquals(2, g.getEdges().size)
     }
 
     @Test
-    fun testGetVerticesEmptyGraph() {
-        val vertices = graph.getVertices()
-        assertTrue(vertices.isEmpty())
+    fun `findOptimalVertex on empty set returns null`() {
+        val g = Graph<Int>()
+        val (v, dist) = g.findOptimalVertex(emptySet())
+        assertNull(v)
+        assertEquals(0, dist)
     }
 
     @Test
-    fun testPrintAdjList() {
-        val output = ByteArrayOutputStream()
-        System.setOut(PrintStream(output))
+    fun `findOptimalVertex on single vertex returns same vertex with zero distance`() {
+        val g = Graph<Int>()
+        g.addVertex(42)
+        val (v, dist) = g.findOptimalVertex(setOf(42))
+        assertEquals(42, v)
+        assertEquals(0, dist)
+    }
+    @Test
+    fun `findOptimalVertex picks center of simple path`() {
+        /*
+           1 --- 2 --- 3
+           chosen = {1, 3}
+           Версия с единичными весами. Оптимальная вершина 2, макс. расстояние = 1
+        */
+        val g = Graph<Int>()
+        g.addEdge(1, 2)
+        g.addEdge(2, 3)
 
-        graph.addEdge("A", "B", 4)
-        graph.addEdge("A", "C", 5)
-        graph.printAdjList()
-
-        val expectedOutput = """
-            Вершина A соединена с: B (вес 4), C (вес 5)
-            Вершина B соединена с: A (вес 4)
-            Вершина C соединена с: A (вес 5)
-        """.trimIndent()
-
-        assertEquals(expectedOutput, output.toString().trim())
+        val (v, dist) = g.findOptimalVertex(setOf(1, 3))
+        assertEquals(2, v)
+        assertEquals(1, dist)
     }
 
+
     @Test
-    fun testAddIntegerVertices() {
-        val integerGraph = Graph<Int>()
+    fun `findOptimalVertex works on triangle graph with equal distances`() {
+        /*
+          1
+         / \
+        2---3     chosen = {1,2,3}
+        Любая вершина подходит, макс. дистанция = 1
+         */
+        val g = Graph<Int>()
+        g.addEdge(1, 2)
+        g.addEdge(2, 3)
+        g.addEdge(3, 1)
 
-        integerGraph.addVertex(1)
-        integerGraph.addVertex(2)
-        integerGraph.addVertex(3)
-
-        assertTrue(integerGraph.getVertices().contains(1))
-        assertTrue(integerGraph.getVertices().contains(2))
-        assertTrue(integerGraph.getVertices().contains(3))
-        assertEquals(3, integerGraph.getVertices().size)
-
-        integerGraph.addEdge(1, 2, 5)
-        integerGraph.addEdge(2, 3, 10)
-
-        val edges1 = integerGraph.getAdjacentEdges(1)
-        val edges2 = integerGraph.getAdjacentEdges(2)
-        val edges3 = integerGraph.getAdjacentEdges(3)
-
-        assertEquals(1, edges1.size)
-        assertEquals(5, edges1[0].weight)
-        assertEquals(2, edges1[0].finish)
-
-        assertEquals(2, edges2.size)
-        assertEquals(5, edges2[0].weight)
-        assertEquals(1, edges2[0].finish)
-        assertEquals(10, edges2[1].weight)
-        assertEquals(3, edges2[1].finish)
-
-        assertEquals(1, edges3.size)
-        assertEquals(10, edges3[0].weight)
-        assertEquals(2, edges3[0].finish)
+        val (v, dist) = g.findOptimalVertex(setOf(1, 2, 3))
+        assertNotNull(v)
+        assertEquals(1, dist)
+        assertTrue(v in setOf(1, 2, 3))
     }
 }

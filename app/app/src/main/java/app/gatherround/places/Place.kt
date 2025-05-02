@@ -14,7 +14,6 @@ data class Place(
     val title: String,
     val address: String,
     val coords: Coordinates? = null,
-    // @Serializable(with = SubwayDeserializer::class)
     val subway: String,
 ) {
     @Serializable

@@ -1,16 +1,36 @@
 package app.gatherround.graph
 
+/** «Бесконечное» расстояние, используемое в алгоритмах */
 const val MAX_DIST = Int.MAX_VALUE
 
+/**
+ * Класс для представления неориентированного взвешенного графа.
+ *
+ * @param Vertex тип, которым представлены вершины (должен поддерживать сравнение,
+ *               т.к. вершины хранятся в поскольку вершины хранятся в [TreeSet] в алгоритме Дейкстры).
+ */
 open class Graph<Vertex: Comparable<Vertex>> {
+
+    /* Список смежности графа - для каждой вершины хранится список исходящих рёбер. */
     private val adjacencyList: MutableMap<Vertex, MutableList<Edge>> = mutableMapOf()
 
+    /**
+     Ориентированное ребро графа.
+
+     * @property finish конечная вершина
+     * @property weight вес ребра
+     */
     inner class Edge(val finish: Vertex, val weight: Int = 1)
 
+    /** Добавляет изолированную вершину, если её ещё нет в графе. */
     fun addVertex(vertex: Vertex) {
         adjacencyList.putIfAbsent(vertex, mutableListOf())
     }
 
+    /**
+     * Добавляет неориентированное ребро `start — finish` с весом [weight].
+     * Если стартовой или финишной вершины нет, она создается.
+     */
     fun addEdge(start: Vertex, finish: Vertex, weight: Int = 1) {
         addVertex(start)
         addVertex(finish)
@@ -19,14 +39,17 @@ open class Graph<Vertex: Comparable<Vertex>> {
         adjacencyList[finish]!!.add(Edge(start, weight))
     }
 
+    /** @return множество всех вершин графа. */
     fun getVertices(): Set<Vertex> {
         return adjacencyList.keys.toSet()
     }
 
+    /** @return список исходящих из вершины рёбер или пустой список, если вершины нет. */
     fun getAdjacentEdges(vertex: Vertex): List<Edge> {
         return adjacencyList[vertex]?.toList() ?: emptyList()
     }
 
+    /** Вывод списка смежности в консоль для отладки. */
     fun printAdjList() {
         for ((vertex, edges) in adjacencyList) {
             val edgeDescriptions = edges.joinToString { "${it.finish} (вес ${it.weight})" }
@@ -34,6 +57,10 @@ open class Graph<Vertex: Comparable<Vertex>> {
         }
     }
 
+    /**
+     * @return все рёбра графа в виде пар стартовая вершина — исходящее ребро.
+     *        Учитываются оба направления (т.е. каждое неориентированное ребро будет встречаться дважды).
+     */
     fun getEdges(): List<Pair<Vertex, Edge>> {
         val res = mutableListOf<Pair<Vertex, Edge>>()
 
@@ -45,15 +72,16 @@ open class Graph<Vertex: Comparable<Vertex>> {
         return res
     }
 
+    /**
+     * Ищет вершину, **минимизирующую максимальное** расстояние до любой вершины
+     * из набора [chosenVertexes].
+     *
+     * @return пару *(оптимальная вершина | null, её максимальное расстояние)*.
+     *         Если [chosenVertexes] пуст, возвращает *(null, 0)*.
+     */
     fun findOptimalVertex(
         chosenVertexes: Set<Vertex>,
     ): Pair<Vertex?, Int> {
-        /*
-        Находит такую вершину графа, что максимальное расстояние от нее до вершины из множества
-        выбранных вершин минимально.
-        Возвращает найденную вершину и максимальное расстояние от нее до вершины из множества
-        выбранных вершин.
-        */
         if (chosenVertexes.isEmpty()) {
             return Pair(null, 0)
         }
@@ -87,13 +115,13 @@ open class Graph<Vertex: Comparable<Vertex>> {
         } else Pair(null, 0)
     }
 
+    /**
+     * Возвращает множество вершин, до которых от **каждой** вершины
+     * из словаря **существует путь весом не превышающим bound**.
+     */
     private fun getKIntersection(
         dicts: Map<Vertex, Map<Vertex, Int>>,
         bound: Int): Set<Vertex> {
-        /*
-        Находит общие ключи нескольких хэш-таблиц (вершина, расстояние), при этом значения,
-        соответсвующие ключам, не превосходят заданное число bound.
-         */
         if (dicts.isEmpty()) {
             return emptySet()
         }
@@ -112,13 +140,10 @@ open class Graph<Vertex: Comparable<Vertex>> {
         return intersection
     }
 
+    /** Сужает [curIntersection] до тех вершин, которые встречаются в [newDict] с расстоянием не превосходящим [bound]. */
     private fun getIntersection(curIntersection: Set<Vertex>,
                                 newDict: Map<Vertex, Int>,
                                 bound: Int): MutableSet<Vertex> {
-        /*
-        Находит ключи словаря newDict, такие что соответсвующие им значения не превосходят
-        заданное число bound и содержатся в множестве curIntersection.
-        */
         val result = mutableSetOf<Vertex>()
 
         for ((vertex, dist) in newDict) {
@@ -130,6 +155,12 @@ open class Graph<Vertex: Comparable<Vertex>> {
         return result
     }
 
+    /**
+     * Вычисляет все кратчайшие расстояния от каждой вершины из [vertices]
+     * до остальных, используя алгоритм Дейкстры.
+     *
+     * @return Map «стартовая вершина → Map(вершина → расстояние от стартовой)»
+     */
     private fun precalcSortedDistances(vertices: Set<Vertex>):
             Map<Vertex, Map<Vertex, Int>> {
         val result =

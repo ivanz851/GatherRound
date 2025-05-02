@@ -20,21 +20,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import app.gatherround.findOptimalPlaces
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
 import app.gatherround.metro.RUSSIAN
 import app.gatherround.metro.Station
 import app.gatherround.places.PlacesData
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import app.gatherround.places.findOptimalPlaces
 
 
 @Composable
@@ -126,7 +123,7 @@ fun InputScreen(
 
 
     Column(modifier = Modifier.fillMaxSize()) {
-        var webViewRef = remember { mutableStateOf<WebView?>(null) }
+        val webViewRef = remember { mutableStateOf<WebView?>(null) }
 
         InteractiveMapInput(
             htmlContent = htmlContent,

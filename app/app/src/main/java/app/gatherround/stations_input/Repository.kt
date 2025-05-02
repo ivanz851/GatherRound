@@ -25,13 +25,13 @@ object Repository {
     init {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         val intercept = httpLoggingInterceptor.apply {
-            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY // to check the log
+            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         }
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(intercept)
             .build()
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://svgshare.com") // No base url needed in this project, cz we will download svg image from url
+            .baseUrl("https://svgshare.com")
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
@@ -47,11 +47,7 @@ object Repository {
             }
 
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                try {
-                    responseBodyLD.value = response.body()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+                responseBodyLD.value = response.body()
             }
 
         }

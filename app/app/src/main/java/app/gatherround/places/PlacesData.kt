@@ -1,6 +1,8 @@
 package app.gatherround.places
 
+import android.util.Pair
 import app.gatherround.metro.Location
+import app.gatherround.metro.MetroGraph
 import app.gatherround.metro.Station
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -47,7 +49,6 @@ class PlacesData {
             val response = jsonParser.decodeFromString<PlacesResponse>(json)
             response.results
         } catch (e: Exception) {
-            e.printStackTrace()
             emptyList()
         }
     }
@@ -62,7 +63,7 @@ class PlacesData {
         }
     }
 
-    fun getPlacesByLocationAndRadius(location: Location, radius: Int): String? {
+    private fun getPlacesByLocationAndRadius(location: Location, radius: Int): String? {
         val url = "https://kudago.com/public-api/v1.4/places/" +
                 "?lang=ru" +
                 "&location=msk" +
@@ -76,4 +77,14 @@ class PlacesData {
     fun getPlacesByStation(station: Station): String? {
         return getPlacesByLocationAndRadius(station.location!!, 1200)
     }
+}
+
+
+fun findOptimalPlaces(
+    metroGraph: MetroGraph,
+    selectedStations: Set<Station>,
+    placesData: PlacesData,
+): Pair<Station?, String?> {
+    val optimalStation = metroGraph.findOptimalVertex(selectedStations).first
+    return Pair(optimalStation, placesData.getPlacesByStation(optimalStation!!))
 }

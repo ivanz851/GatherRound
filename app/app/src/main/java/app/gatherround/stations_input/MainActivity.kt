@@ -31,13 +31,9 @@ class MainActivity : ComponentActivity() {
 
                 LaunchedEffect(Unit) {
                     val url = "https://raw.githubusercontent.com/ivanz851/GatherRound/refs/heads/main/app/app/src/main/assets/initial.svg"
-                    try {
-                        fileDownloaderVM.downloadFileFromServer(url).observe(this@MainActivity) { response ->
-                            val svg = response.string()
-                            htmlContent.value = getHTMLBody(svg)
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                    fileDownloaderVM.downloadFileFromServer(url).observe(this@MainActivity) { response ->
+                        val svg = response.string()
+                        htmlContent.value = getHTMLBody(svg)
                     }
                 }
 

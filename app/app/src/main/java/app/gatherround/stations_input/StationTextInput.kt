@@ -1,7 +1,6 @@
 package app.gatherround.stations_input
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.location.Location
 import android.webkit.WebView
 import androidx.compose.animation.AnimatedVisibility
@@ -43,18 +42,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import app.gatherround.findOptimalPlaces
 import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
 import app.gatherround.metro.RUSSIAN
 import app.gatherround.metro.Station
 import app.gatherround.places.PlacesData
-import app.gatherround.places_output.PlacesOutputActivity
 import app.gatherround.places_output.PlacesOutputMap
 import android.net.Uri
 import androidx.compose.material.icons.filled.DirectionsWalk
-import androidx.core.content.ContextCompat
-import com.google.android.gms.location.LocationServices
+import app.gatherround.places.findOptimalPlaces
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -134,26 +130,22 @@ fun StationInputBlock(
         ) {
             Button(onClick = {
                 CoroutineScope(Dispatchers.Main).launch {
-                    try {
-                        val chosenStations = stations.filter { it.id != -1 }.toSet()
-                        val placesData = PlacesData()
+                    val chosenStations = stations.filter { it.id != -1 }.toSet()
+                    val placesData = PlacesData()
 
-                        val optimaPlacesData = withContext(Dispatchers.IO) {
-                            findOptimalPlaces(graph, chosenStations, placesData)
-                        } ?: return@launch
-
-                        val optimalStation = optimaPlacesData.first!!
-                        val eventsJson = optimaPlacesData.second!!
-
-                        val intent = Intent(context, PlacesOutputMap::class.java).apply {
-                            putExtra("station_lat", optimalStation.location!!.lat)
-                            putExtra("station_lon", optimalStation.location!!.lon)
-                            putExtra("places_json", eventsJson)
-                        }
-                        context.startActivity(intent)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                    val optimaPlacesData = withContext(Dispatchers.IO) {
+                        findOptimalPlaces(graph, chosenStations, placesData)
                     }
+
+                    val optimalStation = optimaPlacesData.first!!
+                    val eventsJson = optimaPlacesData.second!!
+
+                    val intent = Intent(context, PlacesOutputMap::class.java).apply {
+                        putExtra("station_lat", optimalStation.location!!.lat)
+                        putExtra("station_lon", optimalStation.location.lon)
+                        putExtra("places_json", eventsJson)
+                    }
+                    context.startActivity(intent)
                 }
             }) {
                 Text("Найти мероприятия")
@@ -246,7 +238,7 @@ fun StationInputField(
                     onClick = {
                         val fromLat = userLocation.latitude
                         val fromLon = userLocation.longitude
-                        val dest = station.location!!
+                        val dest = station.location
                         val appUri = Uri.parse(
                             "yandexmaps://build_route_on_map/?" +
                                     "lat_from=$fromLat&lon_from=$fromLon&" +

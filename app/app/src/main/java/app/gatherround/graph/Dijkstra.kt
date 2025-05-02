@@ -2,7 +2,25 @@ package app.gatherround.graph
 
 import java.util.TreeSet
 
+/**
+ * Реализация алгоритма Дейкстры для графа с положительными весами ребер.
+ *
+ * @param Vertex тип, которым представлены вершины. Должен реализовывать [Comparable],
+ *               поскольку вершины хранятся в [TreeSet], основанном на бинарном дереве поиска.
+ *
+ * Реализует интерфейс [ShortestPathsFinder]:
+ *  * [getShortestPath] — кратчайший путь между двумя вершинами;
+ *  * [getDistances] — кратчайшие расстояния от заданной вершины до всех остальных.
+ */
 class Dijkstra<Vertex: Comparable<Vertex>> : ShortestPathsFinder<Vertex> {
+    /**
+     * Считает кратчайшие расстояния от [start] до всех остальных вершин графа и
+     * сохраняет предков для восстановления пути.
+     *
+     * @return *(distances, ancestors)*, где
+     * * *distances* — Map «вершина → дистанция» (Int.MAX_VALUE, если недостижима);
+     * * *ancestors* — Map «вершина → предыдущая вершина на кратчайшем пути».
+     */
     fun calcShortestPathsFromVertex(graph: Graph<Vertex>,
                                     start: Vertex):
             Pair<Map<Vertex, Int>, Map<Vertex, Vertex?>> {
@@ -36,15 +54,18 @@ class Dijkstra<Vertex: Comparable<Vertex>> : ShortestPathsFinder<Vertex> {
         return Pair(distances, ancestors)
     }
 
+    /**
+     * Вычисляет кратчайший путь от [start] до [finish].
+     *
+     * @return пару *(длина, список вершин в пути)*.
+     *         Если вершина [finish] недостижима, длина — `Int.MAX_VALUE`, путь — `null`.
+     */
     override fun getShortestPath(graph: Graph<Vertex>,
                                  start: Vertex,
                                  finish: Vertex): Pair<Int, List<Vertex>?> {
         val (distances, ancestors) =
             calcShortestPathsFromVertex(graph, start)
         val distance = distances[finish] ?: Int.MAX_VALUE
-
-        println("distances = ${distances}")
-
 
         if (distance == Int.MAX_VALUE) {
             return Pair(distance, null)
@@ -62,6 +83,9 @@ class Dijkstra<Vertex: Comparable<Vertex>> : ShortestPathsFinder<Vertex> {
         return Pair(distance, path)
     }
 
+    /**
+     * Возвращает только кратчайшие расстояния от заданной вершины до остальных вершин графа.
+     */
     fun getDistances(graph: Graph<Vertex>, start: Vertex): Map<Vertex, Int> {
         val (distances, _) =
             Dijkstra<Vertex>().calcShortestPathsFromVertex(graph, start)
