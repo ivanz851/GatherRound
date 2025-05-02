@@ -33,7 +33,20 @@ fun InteractiveMapInput(
                 settings.setSupportZoom(true)
 
 
-                webViewClient = WebViewClient()
+                webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(view: WebView, url: String?) {
+                        super.onPageFinished(view, url)
+                        view.post {
+                            val mapW = 2850
+                            val mapH = 3449
+
+                            val dx = mapW / 2 + 200
+                            val dy = mapH / 2 + 600
+
+                            view.scrollTo(dx, dy)
+                        }
+                    }
+                }
                 webChromeClient = WebChromeClient()
 
                 addJavascriptInterface(
