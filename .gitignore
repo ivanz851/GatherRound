@@ -1,2 +1,11 @@
-gather_round_frontend/
-gather_round_materials/
+*
+
+!app/
+!documentation/
+
+!app/**
+!documentation/**
+
+!README.md
+!PrivacyPolicy.md
+
