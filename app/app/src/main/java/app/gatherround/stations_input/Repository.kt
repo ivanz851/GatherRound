@@ -84,7 +84,6 @@ fun getHTMLBody(svgString: String) = """
         </style>
     </head>
     <body>
-        <h3 id="l_value">WebView</h3>
         <div id="div" class="container">
             $svgString
         </div>

@@ -41,7 +41,7 @@ fun InteractiveMapInput(
                             val mapH = 3449
 
                             val dx = mapW / 2 + 200
-                            val dy = mapH / 2 + 600
+                            val dy = mapH / 2 + 200
 
                             view.scrollTo(dx, dy)
                         }
