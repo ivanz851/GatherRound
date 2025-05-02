@@ -14,6 +14,16 @@ const val MAX_ROUTE_TIME = 5 * SECS_IN_HOUR
 
 const val metroDataJsonPath = "C:\\\\Users\\\\test\\\\user\\\\ProjectSeminar2024-25\\\\GatherRound\\\\app\\\\app\\\\src\\\\main\\\\assets\\\\get-scheme-metadata.json"
 
+/**
+ * Класс для данные схемы метро.
+ * После десериализации **строит вспомогательные словари** для быстрого доступа
+ * к станциям и линиям по ключам.
+ *
+ * @property lines        список линий метро
+ * @property stations     список станций
+ * @property connections  список перегонов между станциями
+ * @property transitions  спсок пересадок пересадки
+ */
 @Serializable
 data class MetroData(
     val lines: List<Line> = emptyList(),

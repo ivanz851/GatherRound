@@ -2,8 +2,36 @@ package app.gatherround.metro
 
 import kotlinx.serialization.Serializable
 
+/** Код русского языка, используемый в словарях `name`, `title` и др. */
 const val RUSSIAN = "ru"
 
+/**
+ * DTO для станции метро.
+ * Объекты сравниваются по локализованному названию на русском (ключ `"ru"` в карте
+ * [name]), а при совпадении — по id линии ([lineId]).
+ *
+ * @property id                 уникальный идентификатор станции
+ * @property name               map локализованных названий станции, ключ — код языка (`"ru"` или `"en"`)
+ * @property lineId             идентификатор линии метро, к которой принадлежит станция
+ * @property location           географические координаты станции (широта/долгота) либо `null`, если неизвестны
+ * @property exits              список выходов на поверхность; каждый выход описан объектом [Exit]
+ * @property scheduleTrains     расписание поездов по направлениям: ключ — id станции-назначения, значение — список [TrainSchedule]
+ * @property workTime           интервалы работы касс/вестибюлей станции (список [WorkTime])
+ * @property services           (не используется)
+ * @property enterTime          (не используется)
+ * @property exitTime           (не используется)
+ * @property ordering           (не используется)
+ * @property mcd                `true`, если станция относится к МЦД; `null` — нет информации
+ * @property outside            `true`, если станция открытого типа (платформа на улице); `null` — нет информации
+ * @property mcc                `true`, если станция принадлежит МКЦ; `null` — нет информации
+ * @property history            (не используется)
+ * @property audios             (не используется)
+ * @property accessibilityImages (не используется)
+ * @property buildingImages     (не используется)
+ * @property stationSvg         SVG-иконка станции
+ * @property textSvg            SVG-текст с названием станции
+ * @property tapSvg             активная зона ( hit-area ) для тапа/клика по станции
+ */
 @Serializable
 data class Station(
     var id: Int = 0,
@@ -43,9 +71,11 @@ data class Station(
     }
 }
 
+/** DTO для географическая точка (широта, долгота) */
 @Serializable
 data class Location(val lat: Double, val lon: Double)
 
+/** DTO для выхода из станции на поверхность */
 @Serializable
 data class Exit(
     val title: Map<String, String>,
@@ -56,6 +86,7 @@ data class Exit(
     val tram: String?
 )
 
+/** DTO для расписание отправлений поездов */
 @Serializable
 data class TrainSchedule(
     val stationToId: Int,

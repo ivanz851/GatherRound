@@ -5,6 +5,16 @@ import app.gatherround.graph.Graph
 import java.io.File
 import java.nio.charset.Charset
 
+/**
+ * Обёртка-граф над данными метро. Наследует [Graph] с типом вершины — [Station].
+ *
+ * Алгоритм поиска кратчайшего пути — Дейкстра из модуля `graph`.
+ *
+ * @constructor сразу после создания наполняет граф всеми станциями, рёбрами-соединениями
+ *              и рёбрами-переходами из [metroData].
+ *
+ * @property metroData данные схемы метро
+ */
 class MetroGraph(private val metroData: MetroData) : Graph<Station>() {
     init {
         metroData.stations.forEach { station ->
@@ -20,10 +30,12 @@ class MetroGraph(private val metroData: MetroData) : Graph<Station>() {
         }
     }
 
+    /** Добавляет станцию как вершину. */
     private fun addStation(station: Station) {
         addVertex(station)
     }
 
+    /** Создаёт ребро-перегон между двумя станциями, если обе найдены. */
     private fun addConnection(connection: Connection) {
         val start: Station? = metroData.getStationById(connection.stationFromId)
         val finish: Station? = metroData.getStationById(connection.stationToId)
@@ -33,6 +45,7 @@ class MetroGraph(private val metroData: MetroData) : Graph<Station>() {
         }
     }
 
+    /** Создаёт ребро-переход между двумя станциями, если обе найдены. */
     private fun addTransition(transition: Transition) {
         val start: Station? = metroData.getStationById(transition.stationFromId)
         val finish: Station? = metroData.getStationById(transition.stationToId)
@@ -42,6 +55,12 @@ class MetroGraph(private val metroData: MetroData) : Graph<Station>() {
         }
     }
 
+    /**
+     * Находит кратчайший путь между двумя станциями по их названию и id лини1.
+     *
+     * @return `Pair(время в секундах, список станций)`; если хотя бы одна станция
+     *         не найдена, результат — `(-1, emptyList())`.
+     */
     fun findShortestPath(startStationName: String,
                          startStationLineId: Int,
                          finishStationName: String,
@@ -59,6 +78,7 @@ class MetroGraph(private val metroData: MetroData) : Graph<Station>() {
         }
     }
 
+    /** Печатает все рёбра графа в читаемом виде (для отладки). */
     fun printAllConnections() {
         val edges = this.getEdges()
 
@@ -73,6 +93,9 @@ class MetroGraph(private val metroData: MetroData) : Graph<Station>() {
         }
     }
 
+    /**
+     * Вспомогательная функция для вывода списка станций, принадлежащих каждой линии (не используется, нужна для отладки).
+     */
     fun processLinesTraversal() {
         /*
         Функция, которая записывает в csv таблицу основную информацию о станциях:
