@@ -17,6 +17,15 @@ import retrofit2.http.GET
 import retrofit2.http.Streaming
 import retrofit2.http.Url
 
+/**
+ * Единая точка доступа к REST-ресурсам, необходимым экрану выбора станций.
+ *
+ * Сейчас объект умеет только **скачивать SVG/HTML-файл** по произвольному URL,
+ * отдавая результат через `LiveData<ResponseBody>`, чтобы ViewModel могла
+ * наблюдать и автоматически освободить ресурс.
+ *
+ * Путь подаётся динамически в методе `downloadFileWithDynamicUrlAsync`.
+ */
 object Repository {
 
     private var service: APIService
@@ -39,6 +48,12 @@ object Repository {
         service = retrofit.create(APIService::class.java)
     }
 
+    /**
+     * Асинхронно скачивает ресурс **по любому URL** и оборачивает тело ответа
+     * в `LiveData<ResponseBody>`.
+     *
+     * В случае ошибки (`onFailure`) LiveData остаётся `null`.
+     */
     fun downloadFileFromServer(url: String): LiveData<ResponseBody> {
         val responseBodyLD = MutableLiveData<ResponseBody>()
         val apiObject = object : Callback<ResponseBody> {
@@ -58,6 +73,12 @@ object Repository {
     }
 }
 
+/* ----------------------------- Retrofit API --------------------------------- */
+
+/**
+ * Retrofit-контракт для скачивания сырых файлов.
+ * Аннотация `@Streaming` запрещает OkHttp буферизовать весь ответ в память.
+ */
 interface APIService {
     @Streaming
     @GET
@@ -66,8 +87,14 @@ interface APIService {
     ): Call<ResponseBody>
 }
 
+/* -------------------------- UI-extension helpers ---------------------------- */
+
 fun Context.toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
 
+/**
+ * Оборачивает SVG-строку в минимальный HTML-документ с подключённым скриптом
+ * `index.js`. Используется для загрузки схемы в [InteractiveMapInput].
+ */
 fun getHTMLBody(svgString: String) = """
     <!DOCTYPE HTML>
     <html>

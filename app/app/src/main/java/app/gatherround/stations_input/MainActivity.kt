@@ -13,6 +13,18 @@ import app.gatherround.metro.MetroData
 import app.gatherround.metro.MetroGraph
 import app.gatherround.metro.Station
 
+/**
+ * Точка входа в приложение.
+ *
+ * 1. Загружает JSON-метаданные схемы метро из *assets*-папки.
+ * 2. На их основе строит [MetroGraph] и список имён станций (для автодополнения).
+ * 3. Асинхронно подтягивает initial.svg с GitHub — результат передаёт на [InputScreen].
+ * 4. Держит список выбранных пользователем станций в `mutableStateListOf`, чтобы
+ *    `InputScreen` реагировал на изменения.
+ *
+ * @property fileDownloaderVM ViewModel, отвечающий за скачивание файлов (SVG)
+ * @property selectedStations `mutableStateListOf` — список выбраных станций
+ */
 class MainActivity : ComponentActivity() {
 
     private val fileDownloaderVM: FileDownloaderVM by viewModels()

@@ -34,6 +34,23 @@ import androidx.compose.ui.platform.LocalContext
 import app.gatherround.places.findOptimalPlaces
 
 
+/**
+ * Экран ввода станций.
+ *
+ * 1. Позволяет пользователю выбирать до 6 станций на интерактивной SVG-схеме
+ *    (см. [InteractiveMapInput]).
+ * 2. Выводит конечную (оптимальную) станцию, минимизирующую
+ *    максимум времени в пути до выбранных станций (через [MetroGraph]).
+ * 3. Запрашивает разрешение на геопозицию и передаёт координаты в [StationInputBlock]
+ *     для перенаправления в Яндекс Карты для построения пешего маршрута к выбранной станции метро.
+ *
+ * @param metroData        десериализованные данные схемы метро
+ * @param stationsNames    пары «название станции, название линии» — источник для автодополнения
+ * @param graph            граф метро, построенный на основе [metroData]
+ * @param htmlContent      SVG-разметка схемы (или `null`, если ещё не загружена)
+ * @param selectedStations список выбранных станций;
+ *
+ */
 @Composable
 fun InputScreen(
     metroData: MetroData,
@@ -70,6 +87,7 @@ fun InputScreen(
         selectedStations.add(emptyStation())
     }
 
+    /** Call-back для клика по станции в SVG. Изменяет [selectedStations] напрямую. */
     val onStationClicked = fun(stationId: String, status: String) {
         val id = stationId.removePrefix("station-").toIntOrNull() ?: return
         val station = metroData.stations.find { it.id == id } ?: return
@@ -92,6 +110,9 @@ fun InputScreen(
         }
     }
 
+    /** Call-back для клика по станции в SVG.
+     *  Обработчик, возвращающий `true`, если выбор удался, — для SVG-скрипта.
+     *  При «deselect» возвращает `false`, чтобы JS мог снять подсветку. */
     val onStationClickedWithResult: (String, String) -> Boolean = onStationClickedWithResult@ { stationId, status ->
         val id = stationId.removePrefix("station-").toIntOrNull() ?: return@onStationClickedWithResult false
         val station = metroData.stations.find { it.id == id } ?: return@onStationClickedWithResult false
@@ -117,12 +138,10 @@ fun InputScreen(
         return@onStationClickedWithResult false
     }
 
-
-
-
-
+    /* ---------- UI ---------------------------------------------------------------- */
 
     Column(modifier = Modifier.fillMaxSize()) {
+        /* WebView со схемой для передачи коллбэков кликов -------------------------------- */
         val webViewRef = remember { mutableStateOf<WebView?>(null) }
 
         InteractiveMapInput(
@@ -149,6 +168,7 @@ fun InputScreen(
                 }
             }
         }
+        /* --- Вывод конечной станции --- */
         Text(
             text = buildString {
                 append("Конечная станция: ")
@@ -160,7 +180,6 @@ fun InputScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         )
-
 
         val context = LocalContext.current
 
@@ -196,6 +215,7 @@ fun InputScreen(
             }
         }
 
+        /* ---------- блок ввода + список выбранных станций ------------------------- */
         StationInputBlock(
             stations = selectedStations,
             stationsNames = stationsNames,
@@ -207,43 +227,5 @@ fun InputScreen(
             userLocation = userLocation
         )
 
-
-
-
-
-
-
-
-
-
-
-
-/*
-        Text(
-            text = "Выбранные станции:",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(start = 16.dp, top = 8.dp)
-        )
-
-// Список станций
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)) {
-
-            selectedStations
-                .filter { it.id != -1 }
-                .forEachIndexed { index, station ->
-                    val name = station.name[RUSSIAN] ?: "Без названия"
-                    val lineId = station.lineId
-
-                    Text(
-                        text = "${index + 1}. $name (линия $lineId)",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(vertical = 2.dp)
-                    )
-                }
-        }
-
-*/
     }
 }

@@ -12,7 +12,7 @@ const val MINS_IN_HOUR = 60
 const val SECS_IN_HOUR = SECS_IN_MIN * MINS_IN_HOUR
 const val MAX_ROUTE_TIME = 5 * SECS_IN_HOUR
 
-const val metroDataJsonPath = "C:\\\\Users\\\\test\\\\user\\\\ProjectSeminar2024-25\\\\GatherRound\\\\app\\\\app\\\\src\\\\main\\\\assets\\\\get-scheme-metadata.json"
+const val metroDataJsonPath = "C:\\\\Users\\\\test\\\\user\\\\study\\\\hse_3_course\\\\course_project\\\\gather_round\\\\app\\\\app\\\\src\\\\main\\\\assets\\\\get-scheme-metadata.json"
 
 /**
  * Класс для данные схемы метро.

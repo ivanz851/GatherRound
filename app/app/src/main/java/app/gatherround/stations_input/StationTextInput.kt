@@ -56,6 +56,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * Вертикальный список полей ввода станций (до 6), а также кнопка «Найти мероприятия».
+ *
+ * @param stations           список выбранных / пустых станций
+ * @param stationsNames      пары **(название станции, название линии)** — для автодополнения
+ * @param metroData          данные схемы метро (для поиска станций по названию)
+ * @param graph              [MetroGraph] — нужен, чтобы вычислить оптимальную станцию
+ * @param webView            ссылка на SVG-`WebView`, чтобы подсвечивать/снимать станции
+ * @param modifier           внешний `Modifier`
+ * @param onStationClicked   callback для прямых кликов на интерактивной карте (может быть `null`)
+ * @param userLocation       GPS-координаты пользователя (или `null`, если нет разрешения)
+ */
 @Composable
 fun StationInputBlock(
     stations: MutableList<Station>,
@@ -70,6 +82,8 @@ fun StationInputBlock(
     val context = LocalContext.current
 
     Column(modifier = modifier.verticalScroll(rememberScrollState())) {
+
+        /* ----------- динамический список полей ввода ------------------------ */
         stations.forEachIndexed { stationIndex, station ->
             StationInputField(
                 metroData = metroData,
@@ -124,6 +138,7 @@ fun StationInputBlock(
 
         Spacer(modifier = Modifier.height(3.dp))
 
+        /* ----------- кнопка «Найти места» ----------------------------- */
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
@@ -148,12 +163,27 @@ fun StationInputBlock(
                     context.startActivity(intent)
                 }
             }) {
-                Text("Найти мероприятия")
+                Text("Найти места")
             }
         }
     }
 }
 
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Одно поле ввода станции с автодополнением, и иконками
+ * "добавить новую станцию", "удалить текущую станцию", "очистить ввод".
+ *
+ * @param station           текущая станция (или «пустая», если id = -1)
+ * @param onValueChange     вызывается при выборе новой станции из выпадающего списка
+ * @param onClose           вызывается при клике по корзине ("удалить текущую станцию"), удаляет поле
+ * @param onAddClick        вызывается при клике на плюс (добавить новую станцию"), добавляет поле
+ * @param showDelete        отображать ли иконку с корзиной
+ * @param showAdd           отображать ли иконку с плюсом
+ * @param webView           SVG-`WebView` для подсветки станций на интерактивной карте
+ * @param userLocation      текущие координаты пользователя (для кнопки "построить маршрут")
+ */
 @Composable
 fun StationInputField(
     metroData: MetroData,
@@ -194,6 +224,7 @@ fun StationInputField(
 
             Spacer(modifier = Modifier.width(8.dp))
 
+            /* ------ поле ввода ----------------------------------------------------- */
             OutlinedTextField(
                 value = curStationName,
                 onValueChange = { newStationName: String ->
@@ -233,6 +264,8 @@ fun StationInputField(
 
             Spacer(modifier = Modifier.width(3.dp))
 
+            /* ------ кнопка "построить маршрут от текущей геопозиции пользователя
+            до выбранной станции" --------------------------- */
             if (station.id != -1 && station.location != null && userLocation != null) {
                 IconButton(
                     onClick = {
@@ -271,6 +304,7 @@ fun StationInputField(
                 Spacer(Modifier.size(34.dp))
             }
 
+            /* ------ кнопка "добавить поле ввода" --------------------------------------- */
             Box(modifier = Modifier.size(48.dp)) {
                 if (showAdd) {
                     IconButton(
@@ -287,6 +321,7 @@ fun StationInputField(
             }
         }
 
+        /* ----------------------- выпадающий список для автодополнения ------------------ */
         AnimatedVisibility(visible = expanded) {
             Card(
                 modifier = Modifier
