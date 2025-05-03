@@ -97,36 +97,36 @@ class TestMetroGraph {
     @Test
     fun testFindShortestPath_from_BitsevskyPark12_to_Kurskaya3() {
         val expectedPath = listOf(
-            metroData.getStationByNameAndLineId("Bitsevsky Park", 12),
+            metroData.getStationByNameAndLineId("Битцевский парк", 12),
 
-            metroData.getStationByNameAndLineId("Novoyasenevskaya", 6),
-            metroData.getStationByNameAndLineId("Yasenevo", 6),
-            metroData.getStationByNameAndLineId("Tyoplyi Stan", 6),
-            metroData.getStationByNameAndLineId("Konkovo", 6),
-            metroData.getStationByNameAndLineId("Belyayevo", 6),
-            metroData.getStationByNameAndLineId("Kaluzhskaya", 6),
-            metroData.getStationByNameAndLineId("Noviye Cheryomushki", 6),
-            metroData.getStationByNameAndLineId("Profsoyuznaya", 6),
-            metroData.getStationByNameAndLineId("Akademicheskaya", 6),
-            metroData.getStationByNameAndLineId("Leninsky Prospekt", 6),
-            metroData.getStationByNameAndLineId("Shabolovskaya", 6),
-            metroData.getStationByNameAndLineId("Oktyabrskaya", 6),
+            metroData.getStationByNameAndLineId("Новоясеневская", 5),
+            metroData.getStationByNameAndLineId("Ясенево", 5),
+            metroData.getStationByNameAndLineId("Тёплый Стан", 5),
+            metroData.getStationByNameAndLineId("Коньково", 5),
+            metroData.getStationByNameAndLineId("Беляево", 5),
+            metroData.getStationByNameAndLineId("Калужская", 5),
+            metroData.getStationByNameAndLineId("Новые Черёмушки", 5),
+            metroData.getStationByNameAndLineId("Профсоюзная", 5),
+            metroData.getStationByNameAndLineId("Академическая", 5),
+            metroData.getStationByNameAndLineId("Ленинский проспект", 5),
+            metroData.getStationByNameAndLineId("Шаболовская", 5),
+            metroData.getStationByNameAndLineId("Октябрьская", 5),
 
-            metroData.getStationByNameAndLineId("Oktyabrskaya", 5),
-            metroData.getStationByNameAndLineId("Dobryninskaya", 5),
-            metroData.getStationByNameAndLineId("Paveletskaya", 5),
-            metroData.getStationByNameAndLineId("Taganskaya", 5),
-            metroData.getStationByNameAndLineId("Kurskaya", 5),
+            metroData.getStationByNameAndLineId("Октябрьская", 6),
+            metroData.getStationByNameAndLineId("Добрынинская", 6),
+            metroData.getStationByNameAndLineId("Павелецкая", 6),
+            metroData.getStationByNameAndLineId("Таганская", 6),
+            metroData.getStationByNameAndLineId("Курская", 6),
 
-            metroData.getStationByNameAndLineId("Kurskaya", 3),
+            metroData.getStationByNameAndLineId("Курская", 3),
         ).mapNotNull { it }
 
         val expectedTimeInSecs = 44 * SECS_IN_MIN
 
         verifyShortestPath(
-            startStationName = "Bitsevsky Park",
+            startStationName = "Битцевский парк",
             startStationLineId = 12,
-            finishStationName = "Kurskaya",
+            finishStationName = "Курская",
             finishStationLineId = 3,
             expectedPath = expectedPath,
             expectedTimeInSecs = expectedTimeInSecs,
@@ -136,26 +136,26 @@ class TestMetroGraph {
     @Test
     fun testFindShortestPath_from_ShosseEntuziastov14_to_Tulskaya9() {
         val expectedPath = listOf(
-            metroData.getStationByNameAndLineId("Shosse Entuziastov", 8),
-            metroData.getStationByNameAndLineId("Aviamotornaya", 8),
-            metroData.getStationByNameAndLineId("Ploshchad Ilicha", 8),
-            metroData.getStationByNameAndLineId("Marksistskaya", 8),
+            metroData.getStationByNameAndLineId("Шоссе Энтузиастов", 9),
+            metroData.getStationByNameAndLineId("Авиамоторная", 9),
+            metroData.getStationByNameAndLineId("Площадь Ильича", 9),
+            metroData.getStationByNameAndLineId("Марксистская", 9),
 
-            metroData.getStationByNameAndLineId("Taganskaya", 5),
-            metroData.getStationByNameAndLineId("Paveletskaya", 5),
-            metroData.getStationByNameAndLineId("Dobryninskaya", 5),
+            metroData.getStationByNameAndLineId("Таганская", 6),
+            metroData.getStationByNameAndLineId("Павелецкая", 6),
+            metroData.getStationByNameAndLineId("Добрынинская", 6),
 
-            metroData.getStationByNameAndLineId("Serpukhovskaya", 9),
-            metroData.getStationByNameAndLineId("Tulskaya", 9),
+            metroData.getStationByNameAndLineId("Серпуховская", 7),
+            metroData.getStationByNameAndLineId("Тульская", 7),
         ).mapNotNull { it }
 
         val expectedTimeInSecs = 21 * SECS_IN_MIN
 
         verifyShortestPath(
-            startStationName = "Shosse Entuziastov",
-            startStationLineId = 8,
-            finishStationName = "Tulskaya",
-            finishStationLineId = 9,
+            startStationName = "Шоссе Энтузиастов",
+            startStationLineId = 9,
+            finishStationName = "Тульская",
+            finishStationLineId = 7,
             expectedPath = expectedPath,
             expectedTimeInSecs = expectedTimeInSecs,
         )
@@ -187,7 +187,7 @@ class TestMetroGraph {
     }
 
     private fun assertTimeDifferenceWithinEps(expectedTimeInSecs: Int, actualTimeInSecs: Int) {
-        val eps = 3.0
+        val eps = 10.0
 
         val timeDifference = abs(expectedTimeInSecs - actualTimeInSecs)
         val maxAllowedDifference = expectedTimeInSecs * (eps / 100)

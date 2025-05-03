@@ -70,6 +70,8 @@ class MetroGraph(private val metroData: MetroData) : Graph<Station>() {
         val finish: Station? =
             metroData.getStationByNameAndLineId(finishStationName, finishStationLineId)
 
+        println("OK ${start == null}")
+
         return if (start != null && finish != null) {
             val (distance, path) = Dijkstra<Station>().getShortestPath(this, start, finish)
             Pair(distance, path)
