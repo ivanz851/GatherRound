@@ -52,18 +52,29 @@ workspace "UI Kotlin + UI JS + Yandex Maps" {
       include *
       include yandexMaps
       include user
-      autolayout lr 300 350
+      autolayout lr 800 600
     }
 
     styles {
       element "External" {
         background #444444
         border dashed
+        fontSize 50
+      }
+      
+      element "AppBox" {
+        fontSize 50
+        width 600
+      }
+      
+      element "Person" {
+        fontSize 50 
+        width 600
       }
       
       relationship "Relationship" {
-        width 300                    
-        fontSize 20            
+        width 1000                    
+        fontSize 50            
       }
     }
 
