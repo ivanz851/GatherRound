@@ -1,54 +1,72 @@
-workspace {
+workspace "UI Kotlin + UI JS + Yandex Maps" {
 
-    model {
-        user = person "User" {
-            description "Пользователь, взаимодействующий с мобильным приложением"
-        }
+  !identifiers hierarchical
 
-        mobileApp = softwareSystem "Мобильное приложение" {
-            description "Приложение для построения маршрутов в метро"
+  model {
+    user = person "Пользователь"
 
-            user -> this "Использует"
+    app = softwareSystem "GatherRound" {
+      uiCompose = container "UI (JetpackCompose)" {
+        technology "Kotlin"
+        tags "AppBox"
+      }
+      
+      backendKotlin = container "Backend (Kotlin)" {
+        technology "Kotlin"
+        tags "AppBox"
+      }
 
-            container_ui = container "UI (Jetpack Compose)" {
-                technology "Jetpack Compose"
-                description "Интерфейс, отображающий карту метро и маршруты"
-            }
-
-            container_graph = container "Граф (ориентированный)" {
-                technology "Kotlin"
-                description "Математическая модель графа метро"
-            }
-
-            container_dijkstra = container "Алгоритм Дейкстры" {
-                technology "Kotlin"
-                description "Компонент, реализующий алгоритм Дейкстры для поиска кратчайших путей"
-            }
-
-            container_data = container "Данные метро Москвы" {
-                technology "Kotlin / API"
-                description "Получает данные о метро и строит на их основе граф"
-            }
-
-            user -> container_ui "Взаимодействует через UI"
-            container_ui -> container_graph "Передаёт выбор пользователя"
-            container_graph -> container_dijkstra "Использует для расчёта маршрута"
-            container_data -> container_graph "Создаёт граф метро"
-            container_graph -> container_ui "Возвращает маршруты"
-        }
+      uiJs = container "UI (JavaScript)" {
+        technology "JavaScript"
+        tags "AppBox"
+      }
+    }
+    
+    kudaGo = softwareSystem "KudaGo.ru" {
+      tags "External"
     }
 
-    views {
-        systemContext mobileApp {
-            include *
-            autolayout lr
-        }
-
-        container mobileApp {
-            include *
-            autolayout lr
-        }
-
-        theme default
+    yandexMaps = softwareSystem "Yandex Maps" {
+      tags "External"
     }
+    
+    
+    user -> app.uiCompose "Взаимодействует"
+    app.uiCompose -> user "Взаимодействует"
+    
+    app.backendKotlin -> kudaGo "Отправляет http запрос"
+    kudaGo -> app.backendKotlin "Возвращает ответ в формате JSON"
+    app.backendKotlin -> yandexMaps "Отправляет http запрос"
+
+    app.uiCompose -> app.uiJs "Подключает JS-bridge, отправляет команду обновить карту"
+    app.uiJs -> app.uiCompose "Передаёт данные о нажатиях"
+    
+    app.uiCompose -> app.backendKotlin "Передает состояние для обработки"
+    app.backendKotlin -> app.uiCompose "Передает новое состояние"
+
+
+  }
+
+  views {
+    container app {
+      include *
+      include yandexMaps
+      include user
+      autolayout lr 300 350
+    }
+
+    styles {
+      element "External" {
+        background #444444
+        border dashed
+      }
+      
+      relationship "Relationship" {
+        width 300                    
+        fontSize 20            
+      }
+    }
+
+    theme default
+  }
 }
